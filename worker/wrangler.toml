@@ -1,0 +1,21 @@
+name = "ps1app-panel"
+main = "src/index.js"
+compatibility_date = "2026-11-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Temporary upload storage. Parts are deleted after the release is published.
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "ps1app-uploads"
+
+[vars]
+BASE_PACKAGE = "com.farsipsx.ps1app"
+VERSION_CODE = "1"
+GITHUB_WORKFLOW = "build-game.yml"
+GITHUB_REF = "main"
+
+# Set with `wrangler secret put`:
+#   GITHUB_TOKEN    - PAT with repo / workflow scope
+#   GITHUB_OWNER    - GitHub account or organization (3xmadmad2110)
+#   GITHUB_REPO     - Repository name (ps1app)
+#   PANEL_TOKEN     - Optional password for the admin panel
