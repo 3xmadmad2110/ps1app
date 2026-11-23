@@ -1,0 +1,14 @@
+{
+  "name": "ps1app-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Admin panel that turns uploaded PS1 bin/cue + cover into per-game Android apps published on GitHub Releases",
+  "scripts": {
+    "start": "node panel/server.js",
+    "dev": "node --watch panel/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

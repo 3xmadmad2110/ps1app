@@ -1,0 +1,121 @@
+name: build-game
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Game slug (also the package suffix)'
+        required: true
+        type: string
+      game_name:
+        description: 'Game name shown in the launcher'
+        required: true
+        type: string
+      package_suffix:
+        description: 'Suffix appended to com.farsipsx.ps1app'
+        required: true
+        type: string
+      version_code:
+        description: 'Android versionCode (must match the OBB)'
+        required: true
+        type: string
+      release_tag:
+        description: 'Draft release tag created by the panel'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  GAME_SLUG: ${{ inputs.slug }}
+  GAME_NAME: ${{ inputs.game_name }}
+  PACKAGE_SUFFIX: ${{ inputs.package_suffix }}
+  VERSION_CODE: ${{ inputs.version_code }}
+  RELEASE_TAG: ${{ inputs.release_tag }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install required SDK packages
+        run: |
+          SDKMANAGER="$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")"
+          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0" "ndk;25.2.9519653" > /dev/null
+
+      - name: Download SwanStation (DuckStation) libretro core
+        run: |
+          chmod +x scripts/fetch-core.sh
+          bash scripts/fetch-core.sh
+
+      - name: Download cover from the draft release
+        run: |
+          mkdir -p build/cover
+          gh release download "$RELEASE_TAG" --pattern 'cover.*' --dir build/cover || true
+
+      - name: Generate launcher icons from the cover
+        run: |
+          chmod +x scripts/make-icons.sh
+          bash scripts/make-icons.sh
+
+      - name: Prepare release signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 -d > android/release.jks
+            printf 'storePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+              "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set; building an unsigned APK"
+          fi
+
+      - name: Build game APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:assembleRelease \
+            -PgameSlug="$GAME_SLUG" \
+            -PgameName="$GAME_NAME" \
+            -PpackageSuffix="$PACKAGE_SUFFIX" \
+            -PversionCode="$VERSION_CODE" \
+            --stacktrace
+
+      - name: Publish APK to the release
+        run: |
+          APK="$(find android/app/build/outputs/apk/release -name '*.apk' | head -n 1)"
+          if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
+          SAFE_NAME="$(printf '%s' "$GAME_NAME" | tr ' /\\:' '____').apk"
+          cp "$APK" "$SAFE_NAME"
+          gh release upload "$RELEASE_TAG" "$SAFE_NAME" --clobber
+          gh release edit "$RELEASE_TAG" --draft=false
+          echo "Published: $SAFE_NAME"
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-${{ inputs.slug }}
+          path: android/app/build/outputs
+          if-no-files-found: ignore

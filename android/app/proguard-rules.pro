@@ -1,0 +1,2 @@
+-keep class com.farsipsx.ps1app.** { *; }
+-keepclasseswithmembernames class * { native <methods>; }

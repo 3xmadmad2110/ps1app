@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+# Falls back to a system Gradle installation when the wrapper jar is absent.
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+if [ -f "$DIR/gradle/wrapper/gradle-wrapper.jar" ]; then
+  exec java -classpath "$DIR/gradle/wrapper/gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain "$@"
+fi
+
+if command -v gradle >/dev/null 2>&1; then
+  exec gradle "$@"
+fi
+
+echo "Gradle not found. Generate the wrapper with: gradle wrapper --gradle-version 8.7" >&2
+exit 1
