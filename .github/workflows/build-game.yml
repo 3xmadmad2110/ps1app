@@ -71,6 +71,13 @@ jobs:
           mkdir -p build/cover
           gh release download "$RELEASE_TAG" --pattern 'cover.*' --dir build/cover || true
 
+      - name: Install ImageMagick
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick
+          convert -version | head -n 1
+
       - name: Generate launcher icons and in-app cover from the cover
         run: |
           set -euo pipefail
