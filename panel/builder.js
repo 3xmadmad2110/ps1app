@@ -38,6 +38,12 @@ async function ensureRelease(job) {
   } else {
     addLog(job.slug, 'info', `ریلیز موجود ${job.releaseTag} مورد استفاده قرار گرفت`);
   }
+  for (const other of await gh.listReleases()) {
+    if (other.tag_name === job.releaseTag && other.draft && other.id !== release.id) {
+      await gh.deleteRelease(other.id);
+      addLog(job.slug, 'info', `پیشنویس تکراری ${other.id} حذف شد`);
+    }
+  }
   for (const asset of release.assets || []) {
     await gh.deleteAsset(asset.id);
   }
@@ -55,10 +61,18 @@ async function uploadAssets(job, release, obbPath) {
   }
   const assets = [];
   for (const item of uploads) {
-    const result = await gh.uploadAsset(release, item.file, item.name, item.type);
+    updateJob(job.slug, {
+      publishProgress: { percent: 0, sent: 0, total: 0, file: item.name },
+    });
+    const result = await gh.uploadAsset(release, item.file, item.name, item.type, (percent, sent, total) => {
+      updateJob(job.slug, {
+        publishProgress: { percent, sent, total, file: item.name },
+      });
+    });
     assets.push({ name: item.name, url: result.browser_download_url });
     addLog(job.slug, 'info', `آپلود ${item.name} به ریلیز تمام شد`);
   }
+  updateJob(job.slug, { publishProgress: null });
   return assets;
 }
 
@@ -195,7 +209,48 @@ export async function prepareJob(slug) {
       status: 'failed',
       step: 'خطا در آمادهسازی',
       error: String(error && error.message ? error.message : error),
+      publishProgress: null,
     }, { level: 'error', message: String(error && error.message ? error.message : error) });
+  }
+  return getJob(slug);
+}
+
+/**
+ * Publish the already-built OBB to GitHub without rebuilding it.
+ * Useful when the OBB exists locally but the release upload failed.
+ */
+export async function publishExisting(slug) {
+  const job = getJob(slug);
+  if (!job) throw new Error('چنین کاری وجود ندارد');
+  const obbPath = path.join(jobDir(slug), obbFileName(job));
+  if (!fs.existsSync(obbPath)) throw new Error('OBB روی دیسک وجود ندارد');
+  if (!githubReady()) throw new Error('GitHub تنظیم نشده است');
+
+  try {
+    updateJob(slug, {
+      status: 'preparing',
+      step: 'آپلود OBB موجود به ریلیز',
+      error: null,
+      publishProgress: { percent: 0, sent: 0, total: 0, file: obbFileName(job) },
+    });
+    addLog(slug, 'info', 'آپلود مجدد OBB موجود به ریلیز (بدون ساخت مجدد)');
+    const release = await ensureRelease(job);
+    const assets = await uploadAssets(job, release, obbPath);
+    await dispatch(job);
+    updateJob(slug, {
+      status: 'building',
+      step: 'در انتظار ساخت توسط GitHub Actions',
+      releaseUrl: release.html_url,
+      assets,
+    }, { level: 'info', message: 'OBB موجود به ریلیز آپلود شد' });
+  } catch (error) {
+    const message = String(error && error.message ? error.message : error);
+    updateJob(slug, {
+      status: 'failed',
+      step: 'خطا در آپلود مجدد OBB',
+      error: message,
+      publishProgress: null,
+    }, { level: 'error', message });
   }
   return getJob(slug);
 }

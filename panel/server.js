@@ -6,7 +6,7 @@ import { pipeline } from 'node:stream/promises';
 import { config, publicConfig, githubReady } from './config.js';
 import { MultipartParser } from './multipart.js';
 import { allJobs, getJob, createJob, jobDir } from './jobs.js';
-import { prepareJob, refreshJob, obbFileName } from './builder.js';
+import { prepareJob, publishExisting, refreshJob, obbFileName } from './builder.js';
 import { renderIndex, renderJob } from './views.js';
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024 * 1024; // GitHub release asset limit
@@ -244,6 +244,10 @@ const server = http.createServer(async (req, res) => {
       if (action === 'refresh') return sendJson(res, 200, await refreshJob(slug));
       if (action === 'retry') {
         void prepareJob(slug);
+        return sendJson(res, 202, getJob(slug));
+      }
+      if (action === 'publish') {
+        void publishExisting(slug);
         return sendJson(res, 202, getJob(slug));
       }
     }

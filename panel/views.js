@@ -88,14 +88,29 @@ export function renderIndex(jobs, config) {
             <input type="file" name="bin" id="bin-file" accept=".bin,.img" required>
           </label>
           <label class="file-field">فایل (.cue)
-            <input type="file" name="cue" accept=".cue" required>
+            <input type="file" name="cue" id="cue-file" accept=".cue" required>
           </label>
           <label class="file-field">کاور بازی (اختیاری)
-            <input type="file" name="cover" accept="image/*">
+            <input type="file" name="cover" id="cover-file" accept="image/*">
           </label>
         </div>
-        <div id="upload-status" class="status-line"></div>
-        <button type="submit" id="submit-btn">ساخت و انتشار</button>
+        <div class="upload-panel">
+          <div id="file-summary" class="file-summary"></div>
+          <div id="progress-wrap" class="progress-wrap" hidden>
+            <div class="progress-head">
+              <span id="progress-label">در حال آپلود فایلها…</span>
+              <strong id="progress-percent" dir="ltr">0%</strong>
+            </div>
+            <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+            <div id="progress-detail" class="progress-detail"></div>
+          </div>
+          <div id="upload-status" class="status-line">فایلها را انتخاب کنید تا آپلود آغاز شود.</div>
+          <div id="upload-error" class="error-box" hidden></div>
+          <div class="form-actions">
+            <button type="submit" id="submit-btn">ساخت و انتشار</button>
+            <button type="button" id="retry-btn" class="ghost" hidden>تلاش مجدد آپلود</button>
+          </div>
+        </div>
       </form>
     </section>
 
@@ -124,8 +139,48 @@ export function renderJob(job, config) {
       <span>${esc(entry.message)}</span>
     </li>`).join('');
 
+  const stages = [
+    ['آپلود', ['uploaded', 'preparing', 'prepared', 'building', 'released']],
+    ['ساخت OBB', ['preparing', 'prepared', 'building', 'released']],
+    ['ریلیز GitHub', ['prepared', 'building', 'released']],
+    ['APK (Actions)', ['building', 'released']],
+  ];
+  const stagePercent = { uploaded: 25, preparing: 50, prepared: 65, building: 85, released: 100, failed: 50 };
+  const progress = job.publishProgress;
+  const percent = progress ? progress.percent : (stagePercent[job.status] ?? 25);
+  const progressLabel = progress
+    ? `آپلود ${progress.file} به ریلیز GitHub…`
+    : (job.status === 'building' ? 'در انتظار GitHub Actions…' : 'مراحل انتشار');
+  const progressNote = progress && progress.total
+    ? `${size(progress.sent)} از ${size(progress.total)}`
+    : '';
+  const stepsHtml = stages.map(([label, doneStatuses], index) => {
+    const done = job.status === 'released'
+      ? true
+      : job.status === 'failed'
+        ? index === 0 || (index === 1 && Boolean(job.obbName || job.obbUrl))
+        : doneStatuses.includes(job.status);
+    const cls = done ? 'done' : (job.status === 'failed' && index === 2 ? 'error' : 'todo');
+    return `<span class="step-chip ${cls}">${esc(label)}</span>`;
+  }).join('<b class="step-arrow">→</b>');
+
   return shell(`${job.name} — PS1App`, `
     <div class="breadcrumb"><a href="/">پنل</a><span>/</span><span>${esc(job.name)}</span></div>
+
+    <section class="card pipeline">
+      <div class="pipeline-head">
+        <h2>${esc(progressLabel)}</h2>
+        <strong id="pipeline-percent" dir="ltr">${percent}%</strong>
+      </div>
+      <div class="steps">${stepsHtml}</div>
+      <div class="progress-track"><div class="progress-bar ${job.status === 'released' ? 'done' : ''}" style="width:${percent}%"></div></div>
+      ${progressNote ? `<p class="progress-detail" dir="ltr">${esc(progressNote)}</p>` : ''}
+      <p class="pipeline-note">${job.status === 'released'
+        ? 'همهچیز در ریلیز GitHub آماده است.'
+        : job.status === 'failed'
+          ? 'انتشار با خطا مواجه شد. جزئیات را در گزارش ساخت ببینید.'
+          : 'پس از اتمام، APK بهطور خودکار به همان ریلیز اضافه میشود.'}</p>
+    </section>
 
     <section class="card detail-head">
       <div>
@@ -134,8 +189,10 @@ export function renderJob(job, config) {
         ${job.error ? `<div class="error-box">${esc(job.error)}</div>` : ''}
       </div>
       <div class="actions">
+        <a class="ghost" href="/">آپلود بازیnew</a>
+        ${job.obbUrl ? `<button class="ghost" data-action="publish" data-slug="${esc(job.slug)}">آپلود OBB به ریلیز</button>` : ''}
         <button class="ghost" data-action="refresh" data-slug="${esc(job.slug)}">بهروزرسانی وضعیت</button>
-        <button class="ghost" data-action="retry" data-slug="${esc(job.slug)}">ساخت مجدد</button>
+        <button class="ghost" data-action="retry" data-slug="${esc(job.slug)}">ساخت مجدد OBB و ریلیز</button>
       </div>
     </section>
 
