@@ -9,6 +9,7 @@ val gameSlug = providers.gradleProperty("gameSlug").orNull ?: "base"
 val gameName = providers.gradleProperty("gameName").orNull ?: "PS1App"
 val packageSuffix = providers.gradleProperty("packageSuffix").orNull ?: ""
 val gameVersionCode = providers.gradleProperty("versionCode").orNull?.toIntOrNull() ?: 1
+val dataDownloadUrl = providers.gradleProperty("dataDownloadUrl").orNull ?: ""
 
 val basePackage = "com.farsipsx.ps1app"
 val finalPackage = if (packageSuffix.isBlank()) basePackage else "$basePackage.$packageSuffix"
@@ -35,6 +36,7 @@ android {
         resValue("string", "app_name", gameName)
         resValue("string", "game_slug", gameSlug)
         resValue("string", "game_package", finalPackage)
+        resValue("string", "data_download_url", dataDownloadUrl)
 
         externalNativeBuild {
             cmake {

@@ -50,18 +50,18 @@
             android:layout_marginBottom="24dp" />
 
         <Button
+            android:id="@+id/download_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/download_data"
+            android:visibility="gone" />
+
+        <Button
             android:id="@+id/start_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/start_game"
-            android:enabled="false" />
-
-        <Button
-            android:id="@+id/pick_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/pick_obb"
-            android:visibility="gone"
+            android:enabled="false"
             android:layout_marginTop="8dp" />
 
         <TextView

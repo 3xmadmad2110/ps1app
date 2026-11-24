@@ -2,14 +2,19 @@
 <resources>
     <string name="tagline">PS1 · SwanStation (DuckStation)</string>
     <string name="start_game">اجرای بازی</string>
-    <string name="pick_obb">انتخاب فایل OBB</string>
-    <string name="obb_missing">فایل دیتای بازی (OBB) پیدا نشد.\nفایل OBB را از ریلیز دانلود کرده و در پوشه مشخص شده قرار دهید یا دکمه زیر را بزنید.</string>
-    <string name="obb_found">بازی: %1$s\nدیسک: %2$s\nCUE: %3$s\nحجم OBB: %4$s MB</string>
-    <string name="obb_bad">خواندن OBB ناموفق بود: %1$s</string>
+    <string name="download_data">دریافت دیتا</string>
+    <string name="download_again">دریافت مجدد دیتا</string>
+    <string name="obb_path">مسیر دیتا: Android/obb/%1$s/%2$s</string>
+    <string name="obb_missing">دیتای بازی هنوز دانلود نشده است.\nدکمه «دریافت دیتا» را بزنید تا فایل مورد نیاز از GitHub دریافت شود.</string>
+    <string name="download_url_missing">لینک دانلود دیتا در این نسخه تنظیم نشده است.</string>
+    <string name="downloading">در حال دانلود دیتا… لطفاً صبر کنید.</string>
+    <string name="download_started">دانلود دیتا آغاز شد. میتوانید از نوار اعلان پیگیری کنید.</string>
+    <string name="download_failed">دانلود دیتا ناموفق بود (کد: %1$s). دوباره تلاش کنید.</string>
+    <string name="download_done">دیتا دانلود شد. اکنون بازی آماده اجراست.</string>
+    <string name="obb_found">بازی: %1$s\nدیسک: %2$s\nCUE: %3$s\nحجم دیتا: %4$s MB</string>
+    <string name="obb_bad">خواندن دیتا ناموفق بود: %1$s</string>
     <string name="extract_failed">استخراج دیتا ناموفق بود: %1$s</string>
-    <string name="obb_copied">فایل OBB کپی شد</string>
-    <string name="copy_failed">کپی ناموفق بود: %1$s</string>
     <string name="core_missing">کور SwanStation پیدا نشد. لطفاً اسکریپت scripts/fetch-core را اجرا کنید.</string>
     <string name="core_load_failed">بارگذاری کور یا بازی ناموفق بود. فایل CUE را بررسی کنید.</string>
-    <string name="help_text">راهنما:\n• فایل OBB همان فایلی است که در ریلیز GitHub قرار دارد.\n• نام فایل OBB نباید تغییر کند.\n• اولین اجرا کمی طول میکشد تا دیتا استخراج شود.\n• فقط از ایمجهایی استفاده کنید که حقوق قانونی آن را دارید.</string>
+    <string name="help_text">راهنما:\n• دیتا بهصورت خودکار از ریلیز GitHub دانلود میشود.\n• نیازی به کپی دستی OBB نیست.\n• اولین اجرا کمی طول میکشد تا دیتا استخراج شود.\n• فقط از ایمجهایی استفاده کنید که حقوق قانونی آن را دارید.</string>
 </resources>

@@ -109,11 +109,13 @@ jobs:
         working-directory: android
         run: |
           chmod +x ./gradlew
+          DATA_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/main.$VERSION_CODE.com.farsipsx.ps1app.$PACKAGE_SUFFIX.obb"
           ./gradlew :app:assembleRelease \
             -PgameSlug="$GAME_SLUG" \
             -PgameName="$GAME_NAME" \
             -PpackageSuffix="$PACKAGE_SUFFIX" \
             -PversionCode="$VERSION_CODE" \
+            -PdataDownloadUrl="$DATA_URL" \
             --stacktrace
 
       - name: Publish APK to the release
