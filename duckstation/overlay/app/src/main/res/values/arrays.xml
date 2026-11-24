@@ -423,6 +423,7 @@
         <item>اسپانیایی (es)</item>
         <item>روسی (ru)</item>
         <item>چینی (سادهشده)</item>
+        <item>فارسی</item>
     </string-array>
     <string-array name="settings_language_values">
         <item>none</item>
@@ -433,6 +434,7 @@
         <item>es-ES</item>
         <item>ru-RU</item>
         <item>zh-CN</item>
+        <item>fa-IR</item>
     </string-array>
     <string-array name="settings_theme_entries">
         <item>پیروی از سیستم</item>

@@ -63,6 +63,9 @@ public class GameLauncherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Pin DuckStation's language to Persian before any settings screen opens.
+        androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
+                .edit().putString("Main/Language", "fa-IR").apply();
         setContentView(R.layout.activity_game_launcher);
 
         gameNameView = findViewById(R.id.ps1_game_name);
