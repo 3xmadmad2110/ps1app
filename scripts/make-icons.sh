@@ -43,11 +43,19 @@ for DENSITY in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
   FG=$((SIZE * 9 / 4))
   convert "$COVER" -auto-orient -resize "${FG}x${FG}^" -gravity center \
     -extent "${FG}x${FG}" -strip "PNG32:$OUT/ic_launcher_foreground.png"
+
+  # New resource names force launchers (including MIUI) to refresh the icon.
+  cp "$OUT/ic_launcher.png" "$OUT/ic_launcher_cover.png"
+  cp "$OUT/ic_launcher_round.png" "$OUT/ic_launcher_cover_round.png"
+  cp "$OUT/ic_launcher_foreground.png" "$OUT/ic_launcher_cover_foreground.png"
 done
 
 test -s "$RES/drawable-nodpi/ps1_cover.png"
 test -s "$RES/mipmap-xxxhdpi/ic_launcher.png"
 test -s "$RES/mipmap-xxxhdpi/ic_launcher_round.png"
 test -s "$RES/mipmap-xxxhdpi/ic_launcher_foreground.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher_cover.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher_cover_round.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher_cover_foreground.png"
 
-echo "Launcher icons, adaptive foreground and in-app cover generated from cover."
+echo "Cover-based launcher icons (legacy + adaptive) and in-app cover generated."
