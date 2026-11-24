@@ -1,5 +1,9 @@
 name: build-game
 
+# Builds a per-game APK from the real DuckStation standalone Android frontend
+# (GPL-3.0 fork gfhhhg/duckstation-android, based on upstream 81da9be).
+# The libretro/SwanStation frontend is no longer used.
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,51 +38,33 @@ env:
   VERSION_CODE: ${{ inputs.version_code }}
   RELEASE_TAG: ${{ inputs.release_tag }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  DUCKSTATION_SHA: dcc1e5d61355bca12574469aeb5624f093d2c1e0
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
-      - name: Checkout
+      - name: Checkout project (overlay files)
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Gradle 8.7
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
-
-      - name: Install required SDK packages
+      - name: Fetch DuckStation standalone source
         run: |
           set -euo pipefail
-          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          export ANDROID_SDK_ROOT="$ANDROID_HOME"
-          SDKMANAGER="$(command -v sdkmanager || true)"
-          if [ -z "$SDKMANAGER" ]; then
-            for CANDIDATE in \
-              "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
-              "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"; do
-              if [ -x "$CANDIDATE" ]; then SDKMANAGER="$CANDIDATE"; break; fi
-            done
-          fi
-          if [ -z "$SDKMANAGER" ]; then
-            echo "sdkmanager not found in $ANDROID_HOME" >&2
-            exit 1
-          fi
-          yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0" "ndk;25.2.9519653"
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/duckstation-src"
+          cd "$RUNNER_TEMP/duckstation-src"
+          git init -q
+          git remote add origin https://github.com/gfhhhg/duckstation-android.git
+          git fetch --depth 1 origin "$DUCKSTATION_SHA"
+          git checkout -q FETCH_HEAD
+          echo "SOURCE_DIR=$RUNNER_TEMP/duckstation-src" >> "$GITHUB_ENV"
 
-      - name: Download SwanStation (DuckStation) libretro core
+      - name: Apply PS1App overlay
         run: |
-          chmod +x scripts/fetch-core.sh
-          bash scripts/fetch-core.sh
+          set -euo pipefail
+          cp -a "$GITHUB_WORKSPACE/duckstation/overlay/app/." "$SOURCE_DIR/android/app/"
+          echo "Overlay applied:"
+          find "$SOURCE_DIR/android/app/src/main/java/com/github/stenzek/duckstation" -maxdepth 1 -name '*.java' -printf '%f\n' | sort
 
       - name: Download cover from the draft release
         run: |
@@ -87,8 +73,53 @@ jobs:
 
       - name: Generate launcher icons from the cover
         run: |
+          set -euo pipefail
           chmod +x scripts/make-icons.sh
           bash scripts/make-icons.sh
+          for d in android/app/src/main/res/mipmap-*; do
+            [ -d "$d" ] || continue
+            target="$SOURCE_DIR/android/app/src/main/res/$(basename "$d")"
+            mkdir -p "$target"
+            cp -a "$d"/. "$target"/
+          done
+
+      - name: Set up JDK 17 (SDK command-line tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK components
+        run: |
+          set -euo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          SDKMGR="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMGR" ]; then
+            for CANDIDATE in \
+              "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+              "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"; do
+              if [ -x "$CANDIDATE" ]; then SDKMGR="$CANDIDATE"; break; fi
+            done
+          fi
+          if [ -z "$SDKMGR" ]; then
+            echo "sdkmanager not found in $ANDROID_HOME" >&2
+            exit 1
+          fi
+          yes | "$SDKMGR" --licenses > /dev/null 2>&1 || true
+          "$SDKMGR" --install \
+            "platforms;android-29" \
+            "build-tools;30.0.2" \
+            "ndk;21.4.7075529" \
+            "cmake;3.10.2.4988404"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+
+      - name: Set up JDK 11 (AGP 4.2.1)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
 
       - name: Prepare release signing key
         env:
@@ -97,30 +128,35 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
+          set -euo pipefail
           if [ -n "$KEYSTORE_B64" ]; then
-            printf '%s' "$KEYSTORE_B64" | base64 -d > android/release.jks
+            printf '%s' "$KEYSTORE_B64" | base64 -d > "$SOURCE_DIR/android/release.jks"
             printf 'storePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
-              "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
+              "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > "$SOURCE_DIR/android/keystore.properties"
           else
             echo "::warning::ANDROID_KEYSTORE_BASE64 is not set; building an unsigned APK"
           fi
 
-      - name: Build game APK
-        working-directory: android
+      - name: Build standalone DuckStation game APK
+        working-directory: ${{ env.SOURCE_DIR }}/android
         run: |
+          set -euo pipefail
           chmod +x ./gradlew
           DATA_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/main.$VERSION_CODE.com.farsipsx.ps1app.$PACKAGE_SUFFIX.obb"
+          BIOS_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/share-bios/bios-pack.zip"
           ./gradlew :app:assembleRelease \
             -PgameSlug="$GAME_SLUG" \
             -PgameName="$GAME_NAME" \
             -PpackageSuffix="$PACKAGE_SUFFIX" \
             -PversionCode="$VERSION_CODE" \
             -PdataDownloadUrl="$DATA_URL" \
-            --stacktrace
+            -PbiosDownloadUrl="$BIOS_URL" \
+            --no-daemon --stacktrace
 
       - name: Publish APK to the release
         run: |
-          APK="$(find android/app/build/outputs/apk/release -name '*.apk' | head -n 1)"
+          set -euo pipefail
+          APK="$(find "$SOURCE_DIR/android/app/build/outputs/apk/release" -name '*.apk' | head -n 1)"
           if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
           SAFE_NAME="$(printf '%s' "$GAME_NAME" | tr ' /\\:' '____').apk"
           cp "$APK" "$SAFE_NAME"
@@ -133,5 +169,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-failure-${{ inputs.slug }}
-          path: android/app/build/outputs
+          path: |
+            ${{ env.SOURCE_DIR }}/android/app/build/outputs
+            ${{ env.SOURCE_DIR }}/android/app/build/reports
           if-no-files-found: ignore

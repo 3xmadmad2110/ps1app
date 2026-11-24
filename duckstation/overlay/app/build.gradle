@@ -1,0 +1,94 @@
+apply plugin: 'com.android.application'
+
+import java.util.Properties
+
+def gameSlug = project.findProperty('gameSlug') ?: 'base'
+def gameName = project.findProperty('gameName') ?: 'PS1App'
+def packageSuffix = project.findProperty('packageSuffix') ?: ''
+def gameVersionCode = (project.findProperty('versionCode') ?: '1').toInteger()
+def dataDownloadUrl = project.findProperty('dataDownloadUrl') ?: ''
+def biosDownloadUrl = project.findProperty('biosDownloadUrl') ?: 'https://github.com/3xmadmad2110/ps1app/releases/download/share-bios/bios-pack.zip'
+
+def basePackage = 'com.farsipsx.ps1app'
+def finalPackage = packageSuffix?.trim() ? "${basePackage}.${packageSuffix}" : basePackage
+
+def keystoreFile = rootProject.file('release.jks')
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId finalPackage
+        minSdkVersion 23
+        targetSdkVersion 29
+        versionCode gameVersionCode
+        versionName "1.0"
+
+        manifestPlaceholders = [appName: gameName]
+        resValue("string", "ps1_data_url", dataDownloadUrl)
+        resValue("string", "ps1_bios_url", biosDownloadUrl)
+        resValue("string", "ps1_game_slug", gameSlug)
+    }
+
+    signingConfigs {
+        release {
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+                storePassword keystoreProps.getProperty('storePassword') ?: System.getenv('KEYSTORE_PASSWORD') ?: ''
+                keyAlias keystoreProps.getProperty('keyAlias') ?: System.getenv('KEY_ALIAS') ?: 'ps1app'
+                keyPassword keystoreProps.getProperty('keyPassword') ?: System.getenv('KEY_PASSWORD') ?: System.getenv('KEYSTORE_PASSWORD') ?: ''
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (keystoreFile.exists()) signingConfig signingConfigs.release
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "../../CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_BUILD_TYPE=Release"
+                abiFilters "arm64-v8a", "armeabi-v7a"
+            }
+        }
+    }
+
+    sourceSets {
+        main.assets.srcDirs += "../../data"
+    }
+
+    ndkVersion '21.4.7075529'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+}

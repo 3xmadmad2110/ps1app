@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ps1_title">DuckStation</string>
+    <string name="ps1_download">دریافت دیتا</string>
+    <string name="ps1_play">اجرای بازی</string>
+    <string name="ps1_pause">مکث</string>
+    <string name="ps1_resume">ادامه</string>
+    <string name="ps1_cancel">لغو</string>
+    <string name="ps1_settings">تنظیمات</string>
+    <string name="ps1_status_ready">همه چیز آماده است. بازی را اجرا کنید.</string>
+    <string name="ps1_status_need_data">برای اجرای بازی، دیتا و بایوس را دریافت کنید.</string>
+    <string name="ps1_status_downloading_obb">در حال دریافت دیتای بازی…</string>
+    <string name="ps1_status_downloading_bios">در حال دریافت بایوس DuckStation…</string>
+    <string name="ps1_status_extracting">در حال آمادهسازی بازی…</string>
+    <string name="ps1_status_importing_bios">در حال نصب بایوس…</string>
+    <string name="ps1_download_paused">دانلود متوقف شد.</string>
+    <string name="ps1_download_cancelled">دانلود لغو شد.</string>
+    <string name="ps1_download_retry">تلاش مجدد %d</string>
+    <string name="ps1_download_done">دریافت دیتا تمام شد.</string>
+    <string name="ps1_error_prefix">خطا: </string>
+    <string name="ps1_detail_format">%1$s / %2$s  •  %3$s/s</string>
+    <string name="ps1_detail_unknown">در حال محاسبه…</string>
+</resources>
