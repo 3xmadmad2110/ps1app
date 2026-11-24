@@ -109,6 +109,7 @@ npm start
 
 ## جزئیات فنی
 
+- تمام رشتههای رابط کاربری و گزینههای تنظیمات DuckStation به فارسی ترجمه شدهاند (`duckstation/overlay/app/src/main/res/values/strings.xml` و `arrays.xml`). چون این فایلها رشتههای پیشفرض را جایگزین میکنند، منو صرفنظر از زبان تنظیمشده روی گوشی همیشه فارسی است.
 - `applicationId` توسط `-PpackageSuffix` به `com.farsipsx.ps1app.<slug>` تغییر میکند، در حالی که پکیج Java سورس `com.github.stenzek.duckstation` باقی میماند.
 - URL دانلود OBB و BIOS توسط `resValue` درون APK قرار میگیرند.
 - شبیهساز شامل کتابخانه بومی `libduckstation-native.so` برای `arm64-v8a` و `armeabi-v7a` است (برخلاف اپ قدیمی که کور را در زمان اجرا بارگذاری میکرد).
