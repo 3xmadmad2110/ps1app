@@ -37,10 +37,17 @@ for DENSITY in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
     -extent "${SIZE}x${SIZE}" -strip \( "$MASK" \) -alpha off \
     -compose CopyOpacity -composite "PNG32:$OUT/ic_launcher_round.png"
   rm -f "$MASK"
+
+  # Adaptive icon foreground (108dp at each density) - this is what Android
+  # 26+ launchers actually display, including on the POCO device.
+  FG=$((SIZE * 9 / 4))
+  convert "$COVER" -auto-orient -resize "${FG}x${FG}^" -gravity center \
+    -extent "${FG}x${FG}" -strip "PNG32:$OUT/ic_launcher_foreground.png"
 done
 
 test -s "$RES/drawable-nodpi/ps1_cover.png"
 test -s "$RES/mipmap-xxxhdpi/ic_launcher.png"
 test -s "$RES/mipmap-xxxhdpi/ic_launcher_round.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher_foreground.png"
 
-echo "Launcher icons and in-app cover generated from cover."
+echo "Launcher icons, adaptive foreground and in-app cover generated from cover."
