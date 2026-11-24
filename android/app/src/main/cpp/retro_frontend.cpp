@@ -45,11 +45,11 @@ static fn_void fn_init = nullptr;
 static fn_void fn_deinit = nullptr;
 static fn_set_env fn_set_environment = nullptr;
 static fn_set_video fn_set_video_refresh = nullptr;
-static fn_set_audio_sample fn_set_audio_sample = nullptr;
-static fn_set_audio_batch fn_set_audio_batch = nullptr;
+static fn_set_audio_sample pfn_set_audio_sample = nullptr;
+static fn_set_audio_batch pfn_set_audio_batch = nullptr;
 static fn_set_poll fn_set_input_poll = nullptr;
 static fn_set_input fn_set_input_state = nullptr;
-static fn_load_game fn_load_game = nullptr;
+static fn_load_game pfn_load_game = nullptr;
 static fn_void fn_unload_game = nullptr;
 static fn_void fn_run = nullptr;
 static fn_system_av_info fn_get_av_info = nullptr;
@@ -423,7 +423,6 @@ static void emulationLoop() {
     LOGI("core started: %ux%u @ %.2f fps", av.geometry.base_width, av.geometry.base_height, av.timing.fps);
 
     while (g_running.load()) {
-        if (fn_set_input_poll) fn_set_input_poll();
         if (fn_run) fn_run();
         flushAudio(env);
     }
@@ -488,11 +487,11 @@ Java_com_farsipsx_ps1app_NativeBridge_nativeInit(
     ok &= resolve(g_core, fn_deinit, "retro_deinit");
     ok &= resolve(g_core, fn_set_environment, "retro_set_environment");
     ok &= resolve(g_core, fn_set_video_refresh, "retro_set_video_refresh");
-    ok &= resolve(g_core, fn_set_audio_sample, "retro_set_audio_sample");
-    ok &= resolve(g_core, fn_set_audio_batch, "retro_set_audio_sample_batch");
+    ok &= resolve(g_core, pfn_set_audio_sample, "retro_set_audio_sample");
+    ok &= resolve(g_core, pfn_set_audio_batch, "retro_set_audio_sample_batch");
     ok &= resolve(g_core, fn_set_input_poll, "retro_set_input_poll");
     ok &= resolve(g_core, fn_set_input_state, "retro_set_input_state");
-    ok &= resolve(g_core, fn_load_game, "retro_load_game");
+    ok &= resolve(g_core, pfn_load_game, "retro_load_game");
     ok &= resolve(g_core, fn_unload_game, "retro_unload_game");
     ok &= resolve(g_core, fn_run, "retro_run");
     ok &= resolve(g_core, fn_get_av_info, "retro_get_system_av_info");
@@ -507,8 +506,8 @@ Java_com_farsipsx_ps1app_NativeBridge_nativeInit(
 
     fn_set_environment(environment);
     fn_set_video_refresh(videoRefresh);
-    fn_set_audio_sample(audioSample);
-    fn_set_audio_batch(audioBatch);
+    pfn_set_audio_sample(audioSample);
+    pfn_set_audio_batch(audioBatch);
     fn_set_input_poll(inputPoll);
     fn_set_input_state(inputState);
 
@@ -519,7 +518,7 @@ Java_com_farsipsx_ps1app_NativeBridge_nativeInit(
 
     retro_game_info game{};
     game.path = g_cuePath.c_str();
-    if (!fn_load_game(&game)) {
+    if (!pfn_load_game(&game)) {
         callError("retro_load_game failed — check the .cue file and bin image");
         fn_deinit();
         return JNI_FALSE;
