@@ -2,16 +2,16 @@
 set -euo pipefail
 
 # Turns the uploaded cover into launcher icons and the in-app cover image.
-# Falls back to the bundled placeholders when ImageMagick or a cover is missing.
-COVER="$(find build/cover -maxdepth 1 -type f 2>/dev/null | head -n 1 || true)"
+# The launcher logo is ALWAYS generated from the cover - never a placeholder.
+COVER="$(find build/cover -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) 2>/dev/null | head -n 1 || true)"
 
 if [[ -z "$COVER" ]]; then
-  echo "No cover asset found, keeping placeholder icons."
-  exit 0
+  echo "No cover asset found; refusing to build with a placeholder logo." >&2
+  exit 1
 fi
 if ! command -v convert >/dev/null 2>&1; then
-  echo "ImageMagick not available, keeping placeholder icons."
-  exit 0
+  echo "ImageMagick is required to generate the cover-based logo." >&2
+  exit 1
 fi
 
 RES="android/app/src/main/res"
@@ -38,5 +38,9 @@ for DENSITY in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
     -compose CopyOpacity -composite "PNG32:$OUT/ic_launcher_round.png"
   rm -f "$MASK"
 done
+
+test -s "$RES/drawable-nodpi/ps1_cover.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher.png"
+test -s "$RES/mipmap-xxxhdpi/ic_launcher_round.png"
 
 echo "Launcher icons and in-app cover generated from cover."

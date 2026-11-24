@@ -28,14 +28,19 @@ public class GameLauncherActivity extends AppCompatActivity {
             "https://github.com/3xmadmad2110/ps1app/releases/download/share-bios/bios-pack.zip";
 
     private TextView gameNameView;
-    private TextView statusView;
-    private TextView detailView;
-    private ProgressBar progressView;
     private Button downloadButton;
     private Button playButton;
-    private Button pauseButton;
-    private Button cancelButton;
     private Button settingsButton;
+
+    // Download state is kept here; the full details live in the dialog.
+    private String currentStatus = "";
+    private String currentDetail = "";
+    private int currentPercent = 0;
+    private boolean currentIndeterminate = false;
+    private boolean downloadEnabled = true;
+    private boolean playEnabled = false;
+    private boolean pauseEnabled = false;
+    private boolean cancelEnabled = false;
 
     private Dialog downloadDialog;
     private TextView dlgPhaseView;
@@ -61,13 +66,8 @@ public class GameLauncherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_launcher);
 
         gameNameView = findViewById(R.id.ps1_game_name);
-        statusView = findViewById(R.id.ps1_status);
-        detailView = findViewById(R.id.ps1_detail);
-        progressView = findViewById(R.id.ps1_progress);
         downloadButton = findViewById(R.id.ps1_btn_download);
         playButton = findViewById(R.id.ps1_btn_play);
-        pauseButton = findViewById(R.id.ps1_btn_pause);
-        cancelButton = findViewById(R.id.ps1_btn_cancel);
         settingsButton = findViewById(R.id.ps1_btn_settings);
 
         gameNameView.setText(getApplicationInfo().loadLabel(getPackageManager()));
@@ -83,22 +83,6 @@ public class GameLauncherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 launchGame();
-            }
-        });
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataDownloader current = activeDownloader;
-                if (current == null || !current.isRunning())
-                    return;
-                current.togglePause();
-                updatePauseLabels();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelDownloads();
             }
         });
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -169,20 +153,23 @@ public class GameLauncherActivity extends AppCompatActivity {
 
         downloadDialog.show();
         syncDialogState();
-        if (!busy && downloadButton.isEnabled())
+        if (!busy && downloadEnabled)
             startDownloads();
     }
 
     private void syncDialogState() {
         if (dlgStatusView == null)
             return;
-        dlgStatusView.setText(statusView.getText());
-        dlgDetailView.setText(detailView.getText());
-        dlgProgressView.setIndeterminate(progressView.isIndeterminate());
-        dlgProgressView.setProgress(progressView.getProgress());
-        dlgPauseButton.setEnabled(pauseButton.isEnabled());
-        dlgCancelButton.setEnabled(cancelButton.isEnabled());
-        dlgPlayButton.setVisibility(playButton.isEnabled() ? View.VISIBLE : View.GONE);
+        dlgStatusView.setText(currentStatus);
+        dlgDetailView.setText(currentDetail);
+        dlgProgressView.setIndeterminate(currentIndeterminate);
+        if (!currentIndeterminate)
+            dlgProgressView.setProgress(currentPercent);
+        downloadButton.setEnabled(downloadEnabled);
+        playButton.setEnabled(playEnabled);
+        dlgPauseButton.setEnabled(pauseEnabled);
+        dlgCancelButton.setEnabled(cancelEnabled);
+        dlgPlayButton.setVisibility(playEnabled ? View.VISIBLE : View.GONE);
         setPhaseText();
         updatePauseLabels();
     }
@@ -207,7 +194,6 @@ public class GameLauncherActivity extends AppCompatActivity {
     private void updatePauseLabels() {
         int label = activeDownloader != null && activeDownloader.isPaused()
                 ? R.string.ps1_resume : R.string.ps1_pause;
-        pauseButton.setText(label);
         if (dlgPauseButton != null)
             dlgPauseButton.setText(label);
     }
@@ -302,21 +288,21 @@ public class GameLauncherActivity extends AppCompatActivity {
         if (obbReady && biosReady && gameReady) {
             setStatus(getString(R.string.ps1_status_ready));
             setProgress(100, -1, -1);
-            downloadButton.setEnabled(false);
-            playButton.setEnabled(true);
+            downloadEnabled = false;
+            playEnabled = true;
         } else {
             setStatus(getString(R.string.ps1_status_need_data));
             setProgress(0, -1, -1);
-            downloadButton.setEnabled(true);
-            playButton.setEnabled(false);
+            downloadEnabled = true;
+            playEnabled = false;
         }
-        pauseButton.setEnabled(false);
-        cancelButton.setEnabled(false);
+        pauseEnabled = false;
+        cancelEnabled = false;
         syncDialogState();
     }
 
     private void setStatus(String message) {
-        statusView.setText(message);
+        currentStatus = message;
         if (dlgStatusView != null)
             dlgStatusView.setText(message);
     }
@@ -326,17 +312,14 @@ public class GameLauncherActivity extends AppCompatActivity {
     }
 
     private void setProgress(int percent, long downloaded, long total, double speed) {
-        if (percent < 0) {
-            progressView.setIndeterminate(true);
-            if (dlgProgressView != null)
-                dlgProgressView.setIndeterminate(true);
-        } else {
-            progressView.setIndeterminate(false);
-            progressView.setProgress(Math.max(0, Math.min(100, percent)));
-            if (dlgProgressView != null) {
-                dlgProgressView.setIndeterminate(false);
-                dlgProgressView.setProgress(Math.max(0, Math.min(100, percent)));
-            }
+        currentIndeterminate = percent < 0;
+        if (!currentIndeterminate)
+            currentPercent = Math.max(0, Math.min(100, percent));
+
+        if (dlgProgressView != null) {
+            dlgProgressView.setIndeterminate(currentIndeterminate);
+            if (!currentIndeterminate)
+                dlgProgressView.setProgress(currentPercent);
         }
 
         String text;
@@ -350,7 +333,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         } else {
             text = getString(R.string.ps1_detail_unknown);
         }
-        detailView.setText(text);
+        currentDetail = text;
         if (dlgDetailView != null)
             dlgDetailView.setText(text);
     }
@@ -360,10 +343,10 @@ public class GameLauncherActivity extends AppCompatActivity {
             return;
         prepare();
         busy = true;
-        downloadButton.setEnabled(false);
-        playButton.setEnabled(false);
-        pauseButton.setEnabled(true);
-        cancelButton.setEnabled(true);
+        downloadEnabled = false;
+        playEnabled = false;
+        pauseEnabled = true;
+        cancelEnabled = true;
         updatePauseLabels();
 
         final File obb = obbFile();
@@ -525,9 +508,10 @@ public class GameLauncherActivity extends AppCompatActivity {
     private void onFailure(String message) {
         busy = false;
         activeDownloader = null;
-        downloadButton.setEnabled(true);
-        pauseButton.setEnabled(false);
-        cancelButton.setEnabled(false);
+        downloadEnabled = true;
+        playEnabled = false;
+        pauseEnabled = false;
+        cancelEnabled = false;
         setStatus(getString(R.string.ps1_error_prefix) + message);
         syncDialogState();
     }
