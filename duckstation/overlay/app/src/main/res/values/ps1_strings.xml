@@ -20,4 +20,16 @@
     <string name="ps1_error_prefix">خطا: </string>
     <string name="ps1_detail_format">%1$s / %2$s  •  %3$s/s</string>
     <string name="ps1_detail_unknown">در حال محاسبه…</string>
+    <string name="ps1_cover_description">کاور بازی</string>
+    <string name="ps1_download_dialog_title">جزئیات دریافت دیتا</string>
+    <string name="ps1_dlg_phase_unknown">مرحله: نامشخص</string>
+    <string name="ps1_dlg_phase_format">مرحله: %1$s</string>
+    <string name="ps1_dlg_file_unknown">فایل: نامشخص</string>
+    <string name="ps1_dlg_file_format">فایل: %1$s</string>
+    <string name="ps1_dlg_phase_obb">دیتای بازی (OBB)</string>
+    <string name="ps1_dlg_phase_bios">بایوس DuckStation</string>
+    <string name="ps1_dlg_phase_import">نصب بایوس</string>
+    <string name="ps1_dlg_phase_extract">آمادهسازی بازی</string>
+    <string name="ps1_dlg_phase_done">اتمام</string>
+    <string name="ps1_dlg_close">بستن</string>
 </resources>

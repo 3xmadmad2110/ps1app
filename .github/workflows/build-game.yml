@@ -71,12 +71,12 @@ jobs:
           mkdir -p build/cover
           gh release download "$RELEASE_TAG" --pattern 'cover.*' --dir build/cover || true
 
-      - name: Generate launcher icons from the cover
+      - name: Generate launcher icons and in-app cover from the cover
         run: |
           set -euo pipefail
           chmod +x scripts/make-icons.sh
           bash scripts/make-icons.sh
-          for d in android/app/src/main/res/mipmap-*; do
+          for d in android/app/src/main/res/mipmap-* android/app/src/main/res/drawable-nodpi; do
             [ -d "$d" ] || continue
             target="$SOURCE_DIR/android/app/src/main/res/$(basename "$d")"
             mkdir -p "$target"

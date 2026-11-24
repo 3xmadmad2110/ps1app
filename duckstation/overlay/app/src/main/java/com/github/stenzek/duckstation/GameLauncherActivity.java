@@ -1,6 +1,7 @@
 package com.github.stenzek.duckstation;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -36,6 +37,19 @@ public class GameLauncherActivity extends AppCompatActivity {
     private Button cancelButton;
     private Button settingsButton;
 
+    private Dialog downloadDialog;
+    private TextView dlgPhaseView;
+    private TextView dlgFileView;
+    private TextView dlgStatusView;
+    private TextView dlgDetailView;
+    private ProgressBar dlgProgressView;
+    private Button dlgPauseButton;
+    private Button dlgCancelButton;
+    private Button dlgCloseButton;
+    private Button dlgPlayButton;
+    private String currentPhase;
+    private String currentFile;
+
     private DataDownloader obbDownloader;
     private DataDownloader biosDownloader;
     private DataDownloader activeDownloader;
@@ -62,7 +76,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDownloads();
+                showDownloadDialog();
             }
         });
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +92,7 @@ public class GameLauncherActivity extends AppCompatActivity {
                 if (current == null || !current.isRunning())
                     return;
                 current.togglePause();
-                pauseButton.setText(current.isPaused() ? R.string.ps1_resume : R.string.ps1_pause);
+                updatePauseLabels();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +116,100 @@ public class GameLauncherActivity extends AppCompatActivity {
                             Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_STORAGE);
         }
+    }
+
+    private void showDownloadDialog() {
+        if (downloadDialog != null && downloadDialog.isShowing())
+            downloadDialog.dismiss();
+
+        downloadDialog = new Dialog(this);
+        downloadDialog.setContentView(R.layout.dialog_download_details);
+        downloadDialog.setCancelable(false);
+
+        dlgPhaseView = (TextView) downloadDialog.findViewById(R.id.ps1_dlg_phase);
+        dlgFileView = (TextView) downloadDialog.findViewById(R.id.ps1_dlg_file);
+        dlgStatusView = (TextView) downloadDialog.findViewById(R.id.ps1_dlg_status);
+        dlgDetailView = (TextView) downloadDialog.findViewById(R.id.ps1_dlg_detail);
+        dlgProgressView = (ProgressBar) downloadDialog.findViewById(R.id.ps1_dlg_progress);
+        dlgPauseButton = (Button) downloadDialog.findViewById(R.id.ps1_dlg_pause);
+        dlgCancelButton = (Button) downloadDialog.findViewById(R.id.ps1_dlg_cancel);
+        dlgCloseButton = (Button) downloadDialog.findViewById(R.id.ps1_dlg_close);
+        dlgPlayButton = (Button) downloadDialog.findViewById(R.id.ps1_dlg_play);
+
+        dlgPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataDownloader current = activeDownloader;
+                if (current == null || !current.isRunning())
+                    return;
+                current.togglePause();
+                updatePauseLabels();
+            }
+        });
+        dlgCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelDownloads();
+                downloadDialog.dismiss();
+            }
+        });
+        dlgCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadDialog.dismiss();
+            }
+        });
+        dlgPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadDialog.dismiss();
+                launchGame();
+            }
+        });
+
+        downloadDialog.show();
+        syncDialogState();
+        if (!busy && downloadButton.isEnabled())
+            startDownloads();
+    }
+
+    private void syncDialogState() {
+        if (dlgStatusView == null)
+            return;
+        dlgStatusView.setText(statusView.getText());
+        dlgDetailView.setText(detailView.getText());
+        dlgProgressView.setIndeterminate(progressView.isIndeterminate());
+        dlgProgressView.setProgress(progressView.getProgress());
+        dlgPauseButton.setEnabled(pauseButton.isEnabled());
+        dlgCancelButton.setEnabled(cancelButton.isEnabled());
+        dlgPlayButton.setVisibility(playButton.isEnabled() ? View.VISIBLE : View.GONE);
+        setPhaseText();
+        updatePauseLabels();
+    }
+
+    private void setPhase(int labelRes, String file) {
+        currentPhase = getString(labelRes);
+        currentFile = file;
+        setPhaseText();
+    }
+
+    private void setPhaseText() {
+        if (dlgPhaseView == null)
+            return;
+        dlgPhaseView.setText(currentPhase == null
+                ? getString(R.string.ps1_dlg_phase_unknown)
+                : getString(R.string.ps1_dlg_phase_format, currentPhase));
+        dlgFileView.setText(currentFile == null || currentFile.isEmpty()
+                ? getString(R.string.ps1_dlg_file_unknown)
+                : getString(R.string.ps1_dlg_file_format, currentFile));
+    }
+
+    private void updatePauseLabels() {
+        int label = activeDownloader != null && activeDownloader.isPaused()
+                ? R.string.ps1_resume : R.string.ps1_pause;
+        pauseButton.setText(label);
+        if (dlgPauseButton != null)
+            dlgPauseButton.setText(label);
     }
 
     @Override
@@ -204,28 +312,47 @@ public class GameLauncherActivity extends AppCompatActivity {
         }
         pauseButton.setEnabled(false);
         cancelButton.setEnabled(false);
+        syncDialogState();
     }
 
     private void setStatus(String message) {
         statusView.setText(message);
+        if (dlgStatusView != null)
+            dlgStatusView.setText(message);
     }
 
     private void setProgress(int percent, long downloaded, long total) {
+        setProgress(percent, downloaded, total, -1);
+    }
+
+    private void setProgress(int percent, long downloaded, long total, double speed) {
         if (percent < 0) {
             progressView.setIndeterminate(true);
+            if (dlgProgressView != null)
+                dlgProgressView.setIndeterminate(true);
         } else {
             progressView.setIndeterminate(false);
             progressView.setProgress(Math.max(0, Math.min(100, percent)));
+            if (dlgProgressView != null) {
+                dlgProgressView.setIndeterminate(false);
+                dlgProgressView.setProgress(Math.max(0, Math.min(100, percent)));
+            }
         }
+
+        String text;
         if (downloaded >= 0 && total > 0) {
-            detailView.setText(String.format(java.util.Locale.US,
+            long speedBytes = speed < 0 ? 0L : (long) speed;
+            text = String.format(java.util.Locale.US,
                     getString(R.string.ps1_detail_format),
                     DataDownloader.formatBytes(downloaded),
                     DataDownloader.formatBytes(total),
-                    "0"));
+                    DataDownloader.formatBytes(speedBytes));
         } else {
-            detailView.setText(R.string.ps1_detail_unknown);
+            text = getString(R.string.ps1_detail_unknown);
         }
+        detailView.setText(text);
+        if (dlgDetailView != null)
+            dlgDetailView.setText(text);
     }
 
     private void startDownloads() {
@@ -237,7 +364,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         playButton.setEnabled(false);
         pauseButton.setEnabled(true);
         cancelButton.setEnabled(true);
-        pauseButton.setText(R.string.ps1_pause);
+        updatePauseLabels();
 
         final File obb = obbFile();
         if (obb == null) {
@@ -251,6 +378,7 @@ public class GameLauncherActivity extends AppCompatActivity {
             biosUrl = BIOS_URL;
         final String finalBiosUrl = biosUrl;
 
+        setPhase(R.string.ps1_dlg_phase_obb, obb.getName());
         setStatus(getString(R.string.ps1_status_downloading_obb));
         obbDownloader = new DataDownloader(this, dataUrl, obb, "ps1_obb", new DataDownloader.Callback() {
             @Override
@@ -260,13 +388,7 @@ public class GameLauncherActivity extends AppCompatActivity {
                     public void run() {
                         if (!busy)
                             return;
-                        progressView.setIndeterminate(false);
-                        progressView.setProgress(Math.max(0, Math.min(100, percent)));
-                        detailView.setText(String.format(java.util.Locale.US,
-                                getString(R.string.ps1_detail_format),
-                                DataDownloader.formatBytes(downloaded),
-                                DataDownloader.formatBytes(total),
-                                DataDownloader.formatBytes((long) speed)));
+                        setProgress(percent, downloaded, total, speed);
                     }
                 });
             }
@@ -303,13 +425,15 @@ public class GameLauncherActivity extends AppCompatActivity {
         });
         activeDownloader = obbDownloader;
         obbDownloader.start();
+        syncDialogState();
     }
 
     private void startBiosDownload(String url) {
         if (!busy)
             return;
-        setStatus(getString(R.string.ps1_status_downloading_bios));
         final File zip = biosZipFile();
+        setPhase(R.string.ps1_dlg_phase_bios, zip.getName());
+        setStatus(getString(R.string.ps1_status_downloading_bios));
         biosDownloader = new DataDownloader(this, url, zip, "ps1_bios", new DataDownloader.Callback() {
             @Override
             public void onProgress(int percent, long downloaded, long total, double speed) {
@@ -318,13 +442,7 @@ public class GameLauncherActivity extends AppCompatActivity {
                     public void run() {
                         if (!busy)
                             return;
-                        progressView.setIndeterminate(false);
-                        progressView.setProgress(Math.max(0, Math.min(100, percent)));
-                        detailView.setText(String.format(java.util.Locale.US,
-                                getString(R.string.ps1_detail_format),
-                                DataDownloader.formatBytes(downloaded),
-                                DataDownloader.formatBytes(total),
-                                DataDownloader.formatBytes((long) speed)));
+                        setProgress(percent, downloaded, total, speed);
                     }
                 });
             }
@@ -361,19 +479,22 @@ public class GameLauncherActivity extends AppCompatActivity {
         });
         activeDownloader = biosDownloader;
         biosDownloader.start();
+        syncDialogState();
     }
 
     private void finishSetup(File biosZip) {
         if (!busy)
             return;
         try {
+            setPhase(R.string.ps1_dlg_phase_import, biosZip.getName());
             setStatus(getString(R.string.ps1_status_importing_bios));
             BiosInstaller.install(biosZip);
 
-            setStatus(getString(R.string.ps1_status_extracting));
             File obb = obbFile();
             if (obb == null || !obb.isFile())
                 throw new Exception("OBB not found");
+            setPhase(R.string.ps1_dlg_phase_extract, obb.getName());
+            setStatus(getString(R.string.ps1_status_extracting));
             ObbData.extract(obb, gameDirectory());
         } catch (Exception e) {
             onFailure(String.valueOf(e.getMessage()));
@@ -382,9 +503,11 @@ public class GameLauncherActivity extends AppCompatActivity {
 
         busy = false;
         activeDownloader = null;
+        setPhase(R.string.ps1_dlg_phase_done, "");
         setStatus(getString(R.string.ps1_download_done));
         setProgress(100, -1, -1);
         refreshState();
+        syncDialogState();
     }
 
     private void cancelDownloads() {
@@ -396,6 +519,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         activeDownloader = null;
         setStatus(getString(R.string.ps1_download_cancelled));
         refreshState();
+        syncDialogState();
     }
 
     private void onFailure(String message) {
@@ -405,6 +529,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         pauseButton.setEnabled(false);
         cancelButton.setEnabled(false);
         setStatus(getString(R.string.ps1_error_prefix) + message);
+        syncDialogState();
     }
 
     private void launchGame() {
@@ -424,6 +549,8 @@ public class GameLauncherActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (downloadDialog != null && downloadDialog.isShowing())
+            downloadDialog.dismiss();
         if (obbDownloader != null)
             obbDownloader.cancel();
         if (biosDownloader != null)
