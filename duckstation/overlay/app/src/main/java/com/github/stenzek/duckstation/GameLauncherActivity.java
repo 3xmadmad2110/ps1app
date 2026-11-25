@@ -619,8 +619,8 @@ public class GameLauncherActivity extends AppCompatActivity {
             final int index = i;
             View card = makeGameCard(index, (int) dp(130));
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams(
-                    GridLayout.spec(i - 1, 1, 1f),
-                    GridLayout.spec((i - 1) / 2));
+                    GridLayout.spec((i - 1) / 2),
+                    GridLayout.spec((i - 1) % 2, 1f));
             lp.width = 0;
             lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
             lp.setMargins(0, 0, (int) dp(11), (int) dp(11));
