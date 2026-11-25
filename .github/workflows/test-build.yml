@@ -1,0 +1,192 @@
+name: test-build
+
+# Builds a test APK from the real DuckStation standalone Android frontend
+# and publishes it only as a GitHub Actions artifact - no release is touched.
+# Used for quick on-device iterations; install with adb install -r.
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Game slug (also the package suffix)'
+        required: true
+        type: string
+      game_name:
+        description: 'Game name shown in the launcher'
+        required: true
+        type: string
+      package_suffix:
+        description: 'Suffix appended to com.farsipsx.ps1app'
+        required: true
+        type: string
+      version_code:
+        description: 'Android versionCode (must match the OBB)'
+        required: true
+        type: string
+      release_tag:
+        description: 'Existing tag used only to build the OBB download URL'
+        required: true
+        type: string
+        default: 'ps1-xenogears_1_d1-v1'
+
+permissions:
+  contents: read
+
+env:
+  GAME_SLUG: ${{ inputs.slug }}
+  GAME_NAME: ${{ inputs.game_name }}
+  PACKAGE_SUFFIX: ${{ inputs.package_suffix }}
+  VERSION_CODE: ${{ inputs.version_code }}
+  RELEASE_TAG: ${{ inputs.release_tag }}
+  DUCKSTATION_SHA: dcc1e5d61355bca12574469aeb5624f093d2c1e0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout project (overlay files)
+        uses: actions/checkout@v4
+
+      - name: Fetch DuckStation standalone source
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/duckstation-src"
+          cd "$RUNNER_TEMP/duckstation-src"
+          git init -q
+          git remote add origin https://github.com/gfhhhg/duckstation-android.git
+          git fetch --depth 1 origin "$DUCKSTATION_SHA"
+          git checkout -q FETCH_HEAD
+          echo "SOURCE_DIR=$RUNNER_TEMP/duckstation-src" >> "$GITHUB_ENV"
+
+      - name: Apply PS1App overlay
+        run: |
+          set -euo pipefail
+          cp -a "$GITHUB_WORKSPACE/duckstation/overlay/app/." "$SOURCE_DIR/android/app/"
+          echo "Overlay applied"
+
+      - name: Use the local cover (no release download)
+        run: |
+          set -euo pipefail
+          mkdir -p build/cover
+          cp mockups/cover.jpg build/cover/cover.jpg
+          test -s build/cover/cover.jpg
+
+      - name: Install ImageMagick
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick
+          convert -version | head -n 1
+
+      - name: Generate launcher icons and in-app cover from the cover
+        run: |
+          set -euo pipefail
+          chmod +x scripts/make-icons.sh
+          bash scripts/make-icons.sh
+          for d in android/app/src/main/res/mipmap-* android/app/src/main/res/drawable-nodpi; do
+            [ -d "$d" ] || continue
+            target="$SOURCE_DIR/android/app/src/main/res/$(basename "$d")"
+            mkdir -p "$target"
+            cp -a "$d"/. "$target"/
+          done
+
+      - name: Set up JDK 17 (SDK command-line tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK components
+        run: |
+          set -euo pipefail
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          SDKMGR="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMGR" ]; then
+            for CANDIDATE in \
+              "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+              "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"; do
+              if [ -x "$CANDIDATE" ]; then SDKMGR="$CANDIDATE"; break; fi
+            done
+          fi
+          if [ -z "$SDKMGR" ]; then
+            echo "sdkmanager not found in $ANDROID_HOME" >&2
+            exit 1
+          fi
+          yes | "$SDKMGR" --licenses > /dev/null 2>&1 || true
+          "$SDKMGR" --install \
+            "platforms;android-29" \
+            "build-tools;30.0.2" \
+            "ndk;21.4.7075529" \
+            "cmake;3.10.2.4988404"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+
+      - name: Set up JDK 11 (AGP 4.2.1)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Prepare release signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 -d > "$SOURCE_DIR/android/release.jks"
+            printf 'storePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+              "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > "$SOURCE_DIR/android/keystore.properties"
+          else
+            echo "No signing key; falling back to the debug build"
+            echo "BUILD_TASK=:app:assembleDebug" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build standalone DuckStation test APK
+        working-directory: ${{ env.SOURCE_DIR }}/android
+        run: |
+          set -euo pipefail
+          chmod +x ./gradlew
+          DATA_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/main.$VERSION_CODE.com.farsipsx.ps1app.$PACKAGE_SUFFIX.obb"
+          BIOS_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/share-bios/bios-pack.zip"
+          TASK="${BUILD_TASK:-:app:assembleRelease}"
+          ./gradlew "$TASK" \
+            -PgameSlug="$GAME_SLUG" \
+            -PgameName="$GAME_NAME" \
+            -PpackageSuffix="$PACKAGE_SUFFIX" \
+            -PversionCode="$VERSION_CODE" \
+            -PdataDownloadUrl="$DATA_URL" \
+            -PbiosDownloadUrl="$BIOS_URL" \
+            --no-daemon --stacktrace
+
+      - name: Upload test APK artifact (no release changes)
+        run: |
+          set -euo pipefail
+          APK="$(find "$SOURCE_DIR/android/app/build/outputs/apk" -name '*.apk' | head -n 1)"
+          if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
+          SAFE_NAME="test-${GAME_SLUG}.apk"
+          cp "$APK" "$SAFE_NAME"
+          echo "APK=$SAFE_NAME"
+          echo "apk_path=$SAFE_NAME" >> "$GITHUB_OUTPUT"
+        id: apk
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-apk-${{ inputs.slug }}
+          path: ${{ steps.apk.outputs.apk_path }}
+          if-no-files-found: error
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-build-failure-${{ inputs.slug }}
+          path: |
+            ${{ env.SOURCE_DIR }}/android/app/build/outputs
+            ${{ env.SOURCE_DIR }}/android/app/build/reports
+          if-no-files-found: ignore
