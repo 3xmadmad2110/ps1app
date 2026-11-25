@@ -1,90 +1,1802 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ps1_bg"
-    android:fillViewport="true">
+    android:background="@drawable/ps1_bg_ember">
 
-    <LinearLayout
+    <!-- حبابهای نورانی غروب و رنگ پنل -->
+    <View
+        android:id="@+id/ps1_blob1"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="-55dp"
+        android:layout_marginEnd="-55dp"
+        android:background="@drawable/ps1_blob_ember" />
+
+    <View
+        android:id="@+id/ps1_blob2"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="-75dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/ps1_blob_rose" />
+
+    <View
+        android:id="@+id/ps1_blob3"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="-45dp"
+        android:background="@drawable/ps1_blob_gold" />
+
+    <FrameLayout
+        android:id="@+id/ps1_sparks"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent" />
 
-        <FrameLayout
+    <!-- محتوای اصلی -->
+    <LinearLayout
+        android:id="@+id/ps1_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ps1_stack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/ps1_cover_frame"
-            android:padding="4dp">
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:translationY="-125dp">
 
-            <ImageView
-                android:id="@+id/ps1_cover"
+            <LinearLayout
+                android:id="@+id/ps1_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/ps1_cover_description"
-                android:maxHeight="300dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ps1_cover" />
-        </FrameLayout>
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/ps1_panel_glass"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="18dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/ps1_top_flow" />
+
+                <FrameLayout
+                    android:id="@+id/ps1_cover_click"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/ps1_cover_frame"
+                    android:clickable="true"
+                    android:padding="3dp">
+
+                    <ImageView
+                        android:id="@+id/ps1_cover"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/ps1_cover_description"
+                        android:maxHeight="260dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ps1_cover" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/ps1_game_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:shadowColor="#000000"
+                    android:shadowDx="0"
+                    android:shadowDy="2"
+                    android:shadowRadius="9"
+                    android:textColor="#e8edf7"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/ps1_button_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/ps1_btn_play"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/ps1_btn_play"
+                        android:minHeight="46dp"
+                        android:text="@string/ps1_play"
+                        android:textAllCaps="false"
+                        android:textColor="#ffffff"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/ps1_btn_download"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ps1_btn_download"
+                        android:minHeight="46dp"
+                        android:text="@string/ps1_download"
+                        android:textAllCaps="false"
+                        android:textColor="#ffffff"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/ps1_btn_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="62dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="62dp"
+                    android:background="@drawable/ps1_btn_settings"
+                    android:minHeight="40dp"
+                    android:text="@string/ps1_settings"
+                    android:textAllCaps="false"
+                    android:textColor="#e8edf7"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ps1_suggest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:shadowColor="#000000"
+                    android:shadowDx="0"
+                    android:shadowDy="2"
+                    android:shadowRadius="10"
+                    android:text="@string/ps1_suggested"
+                    android:textColor="#fbbf24"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/ps1_suggest_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- برند در پایین لانچر -->
+    <LinearLayout
+        android:id="@+id/ps1_brand_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/ps1_game_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="#fb923c"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="14"
+            android:text="@string/ps1_brand"
+            android:textColor="#fbbf24"
+            android:textSize="23sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ps1_word1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/ps1_brand_word_1"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/ps1_word2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/ps1_brand_word_2"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/ps1_word3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/ps1_brand_word_3"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/ps1_word4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/ps1_brand_word_4"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/ps1_word5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ps1_brand_word_5"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- دکمهٔ منو -->
+    <ImageButton
+        android:id="@+id/ps1_burger"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/ps1_btn_outline"
+        android:contentDescription="@string/ps1_menu"
+        android:src="@drawable/ic_menu" />
+
+    <!-- کشوی منو -->
+    <View
+        android:id="@+id/ps1_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_scrim"
+        android:clickable="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ps1_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="72dp"
+        android:background="@drawable/ps1_drawer_bg"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="20dp"
+        android:translationX="-320dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:textColor="#e8edf7"
-            android:textSize="20sp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ps1_menu"
+                android:textColor="#fbbf24"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ps1_brand"
+                android:textColor="#94a3bd"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ps1_menu_store"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ps1_row_card"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_store" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_store"
+                    android:textColor="#e8edf7"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_store_sub"
+                    android:textColor="#94a3bd"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ps1_menu_request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ps1_row_card"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_globe" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_request"
+                    android:textColor="#e8edf7"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_request_sub"
+                    android:textColor="#94a3bd"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ps1_menu_contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ps1_row_card"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_chat" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_contact"
+                    android:textColor="#e8edf7"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_contact_sub"
+                    android:textColor="#94a3bd"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ps1_menu_site"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ps1_row_card"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_site" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_site"
+                    android:textColor="#e8edf7"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_site_sub"
+                    android:textColor="#94a3bd"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ps1_menu_exit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ps1_row_card"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_exit" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_exit"
+                    android:textColor="#e8edf7"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_exit_sub"
+                    android:textColor="#94a3bd"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- صفحهٔ جزئیات کاور -->
+    <FrameLayout
+        android:id="@+id/ps1_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_overlay_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/ps1_detail_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/ps1_btn_outline"
+            android:text="×"
+            android:textColor="#fff5ec"
+            android:textSize="18sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="56dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp">
+
+                <ImageView
+                    android:id="@+id/ps1_detail_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="42dp"
+                    android:layout_marginEnd="42dp"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/ps1_cover_frame"
+                    android:contentDescription="@string/ps1_cover_description"
+                    android:padding="3dp"
+                    android:src="@drawable/ps1_cover" />
+
+                <TextView
+                    android:id="@+id/ps1_detail_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/ps1_game_name_fa"
+                    android:textColor="#fbbf24"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/ps1_detail_meta1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/ps1_row_card"
+                        android:paddingStart="9dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="9dp"
+                        android:paddingBottom="6dp"
+                        android:text="@string/ps1_detail_platform"
+                        android:textColor="#e8edf7"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/ps1_detail_meta2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/ps1_row_card"
+                        android:paddingStart="9dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="9dp"
+                        android:paddingBottom="6dp"
+                        android:text="@string/ps1_detail_disc"
+                        android:textColor="#e8edf7"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/ps1_detail_meta3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ps1_row_card"
+                        android:paddingStart="9dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="9dp"
+                        android:paddingBottom="6dp"
+                        android:text="@string/ps1_detail_year"
+                        android:textColor="#e8edf7"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ps1_detail_meta4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:background="@drawable/ps1_row_card"
+                    android:paddingStart="9dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="9dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/ps1_detail_translated"
+                    android:textColor="#22d3ee"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/ps1_detail_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/ps1_row_card"
+                    android:lineSpacingExtra="4dp"
+                    android:padding="14dp"
+                    android:text="@string/ps1_detail_desc"
+                    android:textColor="#d8c4cf"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/ps1_detail_bazaar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/ps1_btn_green"
+                    android:minHeight="44dp"
+                    android:text="@string/ps1_bazaar"
+                    android:textAllCaps="false"
+                    android:textColor="#06291a"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- فروشگاه -->
+    <FrameLayout
+        android:id="@+id/ps1_store"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_overlay_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/ps1_store_close"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/ps1_btn_outline"
+            android:text="×"
+            android:textColor="#fff5ec"
+            android:textSize="18sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="62dp"
+            android:paddingBottom="22dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="13dp"
+                    android:text="@string/ps1_store"
+                    android:textColor="#fbbf24"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <GridLayout
+                    android:id="@+id/ps1_store_grid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alignmentMode="alignMargins"
+                    android:columnCount="2"
+                    android:rowOrderPreserved="false" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- درخواست فارسیسازی -->
+    <FrameLayout
+        android:id="@+id/ps1_request"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_overlay_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/ps1_req_close"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/ps1_btn_outline"
+            android:text="×"
+            android:textColor="#fff5ec"
+            android:textSize="18sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="62dp"
+            android:paddingBottom="22dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/ps1_request_short"
+                    android:textColor="#fbbf24"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="@string/ps1_req_lead"
+                    android:textColor="#d8c4cf"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ps1_row_card"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/ps1_req_name"
+                        android:textColor="#fbbf24"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/ps1_req_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ps1_field"
+                        android:hint="@string/ps1_req_name_hint"
+                        android:inputType="text"
+                        android:padding="10dp"
+                        android:textColor="#e8edf7"
+                        android:textColorHint="#94a3bd"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/ps1_req_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="#1AF87171"
+                        android:padding="8dp"
+                        android:text="@string/ps1_req_error"
+                        android:textColor="#fca5a5"
+                        android:textSize="11sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/ps1_req_desc"
+                        android:textColor="#fbbf24"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/ps1_req_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp"
+                        android:background="@drawable/ps1_field"
+                        android:gravity="top"
+                        android:hint="@string/ps1_req_desc_hint"
+                        android:inputType="textMultiLine"
+                        android:padding="10dp"
+                        android:textColor="#e8edf7"
+                        android:textColorHint="#94a3bd"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/ps1_req_file"
+                        android:textColor="#fbbf24"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/ps1_req_file"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ps1_btn_outline"
+                        android:text="@string/ps1_req_file_hint"
+                        android:textAllCaps="false"
+                        android:textColor="#94a3bd"
+                        android:textSize="11sp" />
+
+                    <Button
+                        android:id="@+id/ps1_req_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/ps1_btn_play"
+                        android:minHeight="44dp"
+                        android:text="@string/ps1_req_submit"
+                        android:textAllCaps="false"
+                        android:textColor="#2a1206"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ps1_req_ok"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="#1A34D399"
+                    android:padding="14dp"
+                    android:text="@string/ps1_req_ok"
+                    android:textColor="#34d399"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- ارتباط با ما -->
+    <FrameLayout
+        android:id="@+id/ps1_contact"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_overlay_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/ps1_contact_close"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/ps1_btn_outline"
+            android:text="×"
+            android:textColor="#fff5ec"
+            android:textSize="18sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="62dp"
+            android:paddingBottom="22dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/ps1_contact"
+                    android:textColor="#fbbf24"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="@string/ps1_contact_lead"
+                    android:textColor="#d8c4cf"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:id="@+id/ps1_contact_tg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:background="@drawable/ps1_row_card"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_telegram" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_telegram"
+                            android:textColor="#e8edf7"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_telegram_sub"
+                            android:textColor="#94a3bd"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ps1_contact_bale"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:background="@drawable/ps1_row_card"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_bale" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="ب"
+                            android:textColor="#0ea5e9"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_bale"
+                            android:textColor="#e8edf7"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_bale_sub"
+                            android:textColor="#94a3bd"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ps1_ticket_toggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ps1_row_card"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <TextView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="12dp"
+                        android:gravity="center"
+                        android:text="🎫"
+                        android:textSize="19sp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_ticket"
+                            android:textColor="#e8edf7"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ps1_ticket_sub"
+                            android:textColor="#94a3bd"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ps1_ticket_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:background="#A60D1424"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/ps1_ticket_title"
+                        android:textColor="#fbbf24"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/ps1_ticket_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ps1_field"
+                        android:hint="@string/ps1_ticket_title_hint"
+                        android:inputType="text"
+                        android:padding="10dp"
+                        android:textColor="#e8edf7"
+                        android:textColorHint="#94a3bd"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/ps1_ticket_body"
+                        android:textColor="#fbbf24"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/ps1_ticket_body"
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp"
+                        android:background="@drawable/ps1_field"
+                        android:gravity="top"
+                        android:hint="@string/ps1_ticket_body_hint"
+                        android:inputType="textMultiLine"
+                        android:padding="10dp"
+                        android:textColor="#e8edf7"
+                        android:textColorHint="#94a3bd"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/ps1_ticket_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:padding="8dp"
+                        android:text="@string/ps1_ticket_error"
+                        android:textColor="#fca5a5"
+                        android:textSize="11sp"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/ps1_ticket_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/ps1_btn_play"
+                        android:minHeight="42dp"
+                        android:text="@string/ps1_ticket_submit"
+                        android:textAllCaps="false"
+                        android:textColor="#2a1206"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ps1_ticket_ok"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:padding="12dp"
+                        android:text="@string/ps1_ticket_ok"
+                        android:textColor="#34d399"
+                        android:textSize="11sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- پنجرهٔ دانلود -->
+    <View
+        android:id="@+id/ps1_sheet_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_scrim"
+        android:clickable="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ps1_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ps1_sheet_bg"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="20dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="11dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ps1_download_dialog_title"
+                android:textColor="#fbbf24"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/ps1_sheet_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/ps1_btn_outline"
+                android:text="×"
+                android:textColor="#fff5ec"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="11dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ps1_dlg_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ps1_status_downloading_obb"
+                android:textColor="#e8edf7"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/ps1_dlg_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ps1_dlg_percent"
+                android:textColor="#22d3ee"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/ps1_dlg_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="9dp"
+            android:max="100"
+            android:progressDrawable="@drawable/ps1_progress" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/ps1_row_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="9dp">
+
+            <TextView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginEnd="9dp"
+                android:background="#33106D5EFC"
+                android:gravity="center"
+                android:text="◈"
+                android:textColor="#a78bfa"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_dlg_row_game"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_dlg_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_detail_unknown"
+                    android:textColor="#94a3bd"
+                    android:textSize="9sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/ps1_row_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="9dp">
+
+            <TextView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginEnd="9dp"
+                android:background="#33106D5EFC"
+                android:gravity="center"
+                android:text="◉"
+                android:textColor="#a78bfa"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_dlg_row_bios"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_dlg_file"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_dlg_waiting"
+                    android:textColor="#94a3bd"
+                    android:textSize="9sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="#fbbf24"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="14"
+                android:text="@string/ps1_brand"
+                android:textColor="#fbbf24"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ps1_sheet_word1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/ps1_brand_word_1"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_sheet_word2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/ps1_brand_word_2"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_sheet_word3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/ps1_brand_word_3"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_sheet_word4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/ps1_brand_word_4"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/ps1_sheet_word5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ps1_brand_word_5"
+                    android:textColor="#e8edf7"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/ps1_dlg_pause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/ps1_btn_pause"
+                android:minHeight="42dp"
+                android:text="@string/ps1_pause"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/ps1_dlg_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:background="@drawable/ps1_btn_cancel"
+                android:minHeight="42dp"
+                android:text="@string/ps1_cancel"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/ps1_dlg_play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ps1_btn_play"
+            android:minHeight="44dp"
+            android:text="@string/ps1_play"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- تنظیمات گرافیک -->
+    <View
+        android:id="@+id/ps1_set_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_scrim"
+        android:clickable="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ps1_set_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ps1_set_sheet_bg"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="22dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ps1_settings"
+                android:textColor="#a78bfa"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/ps1_set_close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/ps1_btn_outline"
+                android:text="×"
+                android:textColor="#e8edf7"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/ps1_graphics"
+            android:textColor="#fbbf24"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/ps1_btn_play"
+                android:id="@+id/ps1_gfx1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/ps1_btn_play"
-                android:minHeight="52dp"
-                android:text="@string/ps1_play"
-                android:textAllCaps="false"
-                android:textColor="#ffffff"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/ps1_btn_download"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/ps1_btn_download"
-                android:minHeight="52dp"
-                android:text="@string/ps1_download"
+                android:minHeight="38dp"
+                android:text="@string/ps1_gfx_1"
                 android:textAllCaps="false"
                 android:textColor="#ffffff"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textSize="11sp" />
 
-        <Button
-            android:id="@+id/ps1_btn_settings"
+            <Button
+                android:id="@+id/ps1_gfx2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/ps1_btn_settings"
+                android:minHeight="38dp"
+                android:text="@string/ps1_gfx_2"
+                android:textAllCaps="false"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/ps1_gfx3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/ps1_btn_settings"
+                android:minHeight="38dp"
+                android:text="@string/ps1_gfx_3"
+                android:textAllCaps="false"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/ps1_gfx4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/ps1_btn_settings"
+                android:minHeight="38dp"
+                android:text="@string/ps1_gfx_4"
+                android:textAllCaps="false"
+                android:textColor="#e8edf7"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- درخواست امتیاز هنگام خروج -->
+    <View
+        android:id="@+id/ps1_rate_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#C7050710"
+        android:clickable="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/ps1_rate_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/ps1_sheet_bg"
+        android:clickable="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="20dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="#fbbf24"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="12"
+            android:text="⭐"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/ps1_rate_title"
+            android:textColor="#fbbf24"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/ps1_rate_text"
+            android:textColor="#d8c4cf"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ps1_star1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:text="★"
+                android:textColor="#8094a3bd"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/ps1_star2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:text="★"
+                android:textColor="#8094a3bd"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/ps1_star3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:text="★"
+                android:textColor="#8094a3bd"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/ps1_star4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:text="★"
+                android:textColor="#8094a3bd"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/ps1_star5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:text="★"
+                android:textColor="#8094a3bd"
+                android:textSize="30sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/ps1_rate_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/ps1_rate_hint"
+            android:textColor="#94a3bd"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/ps1_rate_go"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ps1_btn_green"
+            android:enabled="false"
+            android:minHeight="42dp"
+            android:text="@string/ps1_rate_go"
+            android:textAllCaps="false"
+            android:textColor="#06291a"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/ps1_rate_later"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
             android:background="@drawable/ps1_btn_settings"
-            android:minHeight="50dp"
-            android:text="@string/ps1_settings"
+            android:minHeight="36dp"
+            android:text="@string/ps1_rate_later"
             android:textAllCaps="false"
             android:textColor="#e8edf7"
-            android:textSize="15sp" />
-
+            android:textSize="11sp" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- صفحهٔ خروج محترمانه -->
+    <FrameLayout
+        android:id="@+id/ps1_exit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ps1_overlay_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="#fbbf24"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="12"
+                android:text="👋"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/ps1_exit_title"
+                android:textColor="#fbbf24"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:text="@string/ps1_exit_text"
+                android:textColor="#d8c4cf"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/ps1_exit_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/ps1_btn_purple_cyan"
+                android:minHeight="40dp"
+                android:text="@string/ps1_exit_back"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/ps1_toast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/ps1_row_card"
+        android:gravity="center"
+        android:padding="11dp"
+        android:textColor="#e8edf7"
+        android:textSize="11sp"
+        android:visibility="gone" />
+</FrameLayout>

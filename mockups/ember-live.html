@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>پیشنمایش زنده — غروب آتشفشانی + رنگ پنل</title>
+<style>
+  :root{
+    /* رنگهای پنل لوکال */
+    --bg:#0b0f19; --panel:#141b2b; --panel-2:#1b2437; --line:#2a3550;
+    --accent:#6d5efc; --accent-2:#22d3ee; --green:#34d399; --yellow:#fbbf24; --purple:#a78bfa;
+    /* رنگهای غروب آتشفشانی */
+    --ember:#fb923c; --rose:#fb7185; --gold:#fbbf24; --ink:#fff5ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;padding:24px;background:radial-gradient(900px 500px at 80% -10%,#2a1a24,#0b0f19 60%);
+    color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;
+    display:flex;flex-direction:column;align-items:center;gap:14px}
+  .note{max-width:800px;text-align:center;color:#d8c4cf;font-size:13px;line-height:1.8}
+  .note b{color:var(--gold)}
+  .ctrl{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--purple);
+    background:rgba(20,27,43,.8);border:1px solid var(--line);border-radius:999px;padding:7px 16px}
+  .ctrl input{width:180px;accent-color:#fb7185}
+  .ctrl b{color:var(--gold);min-width:48px;text-align:left;direction:ltr}
+  .ctrl .mini-btn{margin-right:6px;padding:5px 12px;border-radius:999px;cursor:pointer;
+    font-size:11px;font-weight:700;color:#fff;
+    background:rgba(109,94,252,.45);border:1px solid rgba(167,139,250,.6)}
+  .phone.downloaded .dl{display:none}
+  .phone.downloaded .btns{justify-content:center}
+  .phone.downloaded .play{width:70%;flex:none}
+
+  /* منو همبرگری — بالا سمت چپ */
+  .burger{position:absolute;top:14px;left:14px;width:42px;height:42px;z-index:10;
+    border-radius:13px;border:1px solid rgba(251,146,60,.55);cursor:pointer;
+    background:rgba(20,27,43,.78);backdrop-filter:blur(8px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .burger i{display:block;width:18px;height:2px;border-radius:2px;background:#fff5ec;transition:.28s}
+  .burger i:nth-child(2){width:13px;background:var(--gold)}
+  .burger.on i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .burger.on i:nth-child(2){opacity:0}
+  .burger.on i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .scrim{position:absolute;inset:0;z-index:11;background:rgba(8,5,10,.6);
+    opacity:0;pointer-events:none;transition:opacity .28s}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .drawer{position:absolute;top:0;left:0;bottom:0;width:78%;z-index:12;
+    padding:20px 16px;transform:translateX(-105%);
+    transition:transform .34s cubic-bezier(.22,.9,.25,1);
+    background:linear-gradient(180deg,rgba(20,27,43,.97),rgba(11,15,25,.97));
+    border-left:1px solid rgba(251,146,60,.25);border-right:1px solid var(--line);
+    box-shadow:16px 0 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px}
+  .drawer.on{transform:translateX(0)}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;
+    padding:6px 4px 14px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .drawer-head strong{font-size:16px;color:var(--gold)}
+  .drawer-head small{font-size:11px;color:var(--muted,#94a3bd)}
+  .drawer-item{display:flex;align-items:center;gap:12px;padding:13px 12px;
+    border-radius:14px;border:1px solid var(--line);background:rgba(27,36,55,.65);
+    color:#e8edf7;text-decoration:none;transition:.22s}
+  .drawer-item:hover{border-color:var(--gold);background:rgba(251,146,60,.12);transform:translateX(3px)}
+  .drawer-item .ico{width:36px;height:36px;flex:none;border-radius:11px;display:grid;place-items:center;
+    background:rgba(109,94,252,.22);color:var(--purple)}
+  .drawer-item:nth-child(3) .ico{background:rgba(251,146,60,.18);color:var(--gold)}
+  .drawer-item:nth-child(4) .ico{background:rgba(34,211,238,.16);color:var(--accent-2)}
+  .drawer-item:nth-child(5) .ico{background:rgba(52,211,153,.16);color:var(--green)}
+  .drawer-item:nth-child(6) .ico{background:rgba(251,113,133,.16);color:#fb7185}
+  .drawer-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round}
+  .drawer-item b{display:block;font-size:13px}
+  .drawer-item em{display:block;font-size:10px;font-style:normal;color:#94a3bd;margin-top:3px}
+  .phone{position:relative;width:min(390px,92vw);aspect-ratio:9/19;border-radius:26px;overflow:hidden;
+    background:radial-gradient(circle at 70% 10%,#33202a,#120d16 62%);
+    perspective:900px;
+    box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.09)}
+  .phone.launching .blob{opacity:.85}
+  .phone.launching .b1{animation-duration:4s,3.4s}
+  .phone.launching .b2{animation-duration:5s,4s}
+  .phone.launching .b3{animation-duration:3.6s,3s}
+  .phone.launching .spark{animation-duration:1.8s}
+  .spark.extra{display:none;bottom:-12px}
+  .phone.launching .spark.extra{display:block}
+  .spark.s6{left:8%;animation-delay:.4s}.spark.s7{left:30%;animation-delay:.9s}
+  .spark.s8{left:52%;animation-delay:1.3s}.spark.s9{left:76%;animation-delay:1.8s}
+  .spark.s10{left:92%;animation-delay:2.2s}.spark.s11{left:22%;animation-delay:2.7s}
+  .spark.s12{left:60%;animation-delay:3.1s}.spark.s13{left:45%;animation-delay:3.6s}
+  .spark.s14{left:12%;animation-delay:.2s}.spark.s15{left:36%;animation-delay:.5s}
+  .spark.s16{left:58%;animation-delay:.8s}.spark.s17{left:80%;animation-delay:1.1s}
+  .spark.s18{left:95%;animation-delay:1.4s}.spark.s19{left:20%;animation-delay:1.7s}
+  .spark.s20{left:50%;animation-delay:2s}.spark.s21{left:72%;animation-delay:2.3s}
+  .spark.s22{left:6%;animation-delay:2.6s}.spark.s23{left:42%;animation-delay:2.9s}
+  .spark.s24{left:88%;animation-delay:3.2s}
+  .phone.spinning .panel{animation:panelSpin 2.2s linear}
+  .phone.zooming .panel{animation:panelZoom .95s cubic-bezier(.5,0,.8,.4) forwards}
+  @keyframes panelSpin{
+    0%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(0deg) scale(1)}
+    20%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(25deg) scale(1.02)}
+    40%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(70deg) scale(1.05)}
+    60%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(140deg) scale(1.07)}
+    80%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(240deg) scale(1.05)}
+    100%{transform:translateY(calc(-1 * var(--up,125px))) rotateY(360deg) scale(1)}}
+  @keyframes panelZoom{
+    from{transform:translateY(calc(-1 * var(--up,125px))) scale(1);opacity:1}
+    to{transform:translateY(calc(-1 * var(--up,125px))) scale(6.5);opacity:0}}
+
+  /* حبابهای نورانی: رنگ پنل و غروب بهآرامی جابهجا میشوند (پویا) */
+  .blob{position:absolute;border-radius:50%;filter:blur(52px);opacity:.62;z-index:1}
+  .b1{width:260px;height:260px;top:-55px;right:-55px;
+    animation:driftA 10s ease-in-out infinite alternate, flowA 9s ease-in-out infinite alternate}
+  .b2{width:240px;height:240px;bottom:40px;left:-75px;
+    animation:driftB 12s ease-in-out infinite alternate, flowB 11s ease-in-out infinite alternate}
+  .b3{width:180px;height:180px;top:38%;right:-45px;
+    animation:driftC 8.5s ease-in-out infinite alternate, flowC 7s ease-in-out infinite alternate}
+  @keyframes driftA{to{transform:translate(45px,75px) scale(1.18)}}
+  @keyframes driftB{to{transform:translate(-35px,-85px) scale(1.12)}}
+  @keyframes driftC{to{transform:translate(35px,-60px) scale(1.22)}}
+  @keyframes flowA{0%,100%{background-color:#fb923c}50%{background-color:#6d5efc}}
+  @keyframes flowB{0%,100%{background-color:#fb7185}50%{background-color:#22d3ee}}
+  @keyframes flowC{0%,100%{background-color:#fbbf24}50%{background-color:#a78bfa}}
+
+  .spark{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 12px var(--ember);z-index:2;animation:rise 6s linear infinite;opacity:.85}
+  .s1{left:15%;bottom:-12px}.s2{left:38%;bottom:-12px;animation-delay:1.5s}
+  .s3{left:62%;bottom:-12px;animation-delay:3s}.s4{left:84%;bottom:-12px;animation-delay:4.3s}
+  .s5{left:27%;bottom:-12px;animation-delay:5.1s}
+  @keyframes rise{0%{transform:translate(0,0) scale(.55);opacity:0}
+    20%{opacity:.95}
+    55%{transform:translate(16px,-260px) scale(1.05)}
+    88%{opacity:.8}
+    100%{transform:translate(-12px,-420px) scale(1.3);opacity:0}}
+
+  /* پنل شیشهای از پنل لوکال */
+  .screen{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:18px}
+  .panel{position:relative;width:92%;padding:20px 16px 18px;border-radius:24px;
+    transform:translateY(calc(-1 * var(--up,125px)));transition:transform .25s ease;
+    background:linear-gradient(180deg,rgba(20,27,43,.72),rgba(17,24,40,.68));
+    border:1px solid rgba(42,53,80,.95);backdrop-filter:blur(10px);
+    box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.09);
+    display:flex;flex-direction:column;align-items:center;gap:14px}
+  .panel::before{content:"";position:absolute;inset:0 12% auto;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--ember),var(--purple),var(--accent-2),var(--gold));
+    background-size:300% 100%;animation:flowline 6s linear infinite}
+  @keyframes flowline{to{background-position:300% 0}}
+
+  .cover{width:80%;border-radius:18px;display:block;cursor:pointer;
+    animation:pulseCover 4s ease-in-out infinite alternate}
+
+  /* صفحهٔ جزئیات کاور */
+  .detail{position:absolute;inset:0;z-index:14;overflow-y:auto;
+    padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;
+    background:radial-gradient(circle at 70% 5%,#33202a,#120d16 62%);
+    transform:translateY(100%);
+    transition:transform .36s cubic-bezier(.22,.9,.25,1)}
+  .detail.on{transform:translateY(0)}
+  .detail .close{position:absolute;top:14px;right:14px;width:36px;height:36px;
+    border-radius:12px;border:1px solid rgba(251,146,60,.55);cursor:pointer;
+    background:rgba(20,27,43,.8);color:#fff5ec;font-size:18px;line-height:1}
+  .big-cover{width:76%;border-radius:18px;display:block;
+    box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 3px rgba(251,191,36,.7),0 0 30px rgba(251,146,60,.4)}
+  .detail h3{margin:2px 0 0;font-size:18px;color:var(--gold);text-align:center}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+  .meta span{padding:6px 10px;border-radius:999px;font-size:10px;color:#e8edf7;
+    background:rgba(20,27,43,.8);border:1px solid var(--line)}
+  .meta span:last-child{color:var(--accent-2);border-color:rgba(34,211,238,.45)}
+  .desc{font-size:12px;line-height:2;color:#d8c4cf;text-align:right;margin:0;
+    padding:14px;border-radius:16px;background:rgba(20,27,43,.65);border:1px solid var(--line)}
+
+  /* اسکرول نامرئی — فقط هنگام جابهجایی ظاهر میشود */
+  .store,.detail,.sheet,.set-sheet,.suggest-row{scrollbar-width:none;scrollbar-color:transparent transparent}
+  .store::-webkit-scrollbar,.detail::-webkit-scrollbar,
+  .sheet::-webkit-scrollbar,.set-sheet::-webkit-scrollbar{width:6px}
+  .store::-webkit-scrollbar-track,.detail::-webkit-scrollbar-track,
+  .sheet::-webkit-scrollbar-track,.set-sheet::-webkit-scrollbar-track{background:transparent}
+  .store::-webkit-scrollbar-thumb,.detail::-webkit-scrollbar-thumb,
+  .sheet::-webkit-scrollbar-thumb,.set-sheet::-webkit-scrollbar-thumb{
+    background:transparent;border-radius:999px;transition:background .25s}
+  .store.scrolling,.detail.scrolling,.sheet.scrolling,.set-sheet.scrolling{
+    scrollbar-color:#fbbf24 transparent}
+  .store.scrolling::-webkit-scrollbar-thumb,.detail.scrolling::-webkit-scrollbar-thumb,
+  .sheet.scrolling::-webkit-scrollbar-thumb,.set-sheet.scrolling::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,#fbbf24,#fb7185,#6d5efc);
+    box-shadow:0 0 10px rgba(251,191,36,.7)}
+
+  /* درخواست فارسی سازی */
+  .request{position:absolute;inset:0;z-index:13;overflow-y:auto;
+    padding:18px 14px 22px;display:flex;flex-direction:column;gap:12px;
+    background:radial-gradient(circle at 70% 5%,#33202a,#120d16 62%);
+    transform:translateY(100%);transition:transform .36s cubic-bezier(.22,.9,.25,1)}
+  .request.on{transform:translateY(0)}
+  .req-lead{font-size:11px;line-height:1.9;color:#d8c4cf;margin:0}
+  .req-card{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:18px;
+    background:rgba(20,27,43,.7);border:1px solid var(--line)}
+  .field label{display:block;font-size:11px;color:var(--gold);margin-bottom:6px;font-weight:700}
+  .field input[type="text"],.field textarea{width:100%;border-radius:11px;
+    border:1px solid var(--line);background:#0d1424;color:#e8edf7;
+    padding:10px 11px;font-size:12px;font-family:inherit;outline:none;resize:none}
+  .field input:focus,.field textarea:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+  .file-drop{display:flex;align-items:center;gap:10px;padding:11px;border-radius:12px;
+    border:1px dashed rgba(251,191,36,.55);background:rgba(251,191,36,.05);cursor:pointer}
+  .file-drop i{font-style:normal;font-size:17px;color:var(--gold)}
+  .file-drop span{font-size:11px;color:#94a3bd}
+  .file-drop input{display:none}
+  .req-submit{padding:12px;border:0;border-radius:999px;cursor:pointer;
+    font-size:13px;font-weight:800;color:#2a1206;
+    background:linear-gradient(135deg,#fbbf24,#fb7185);box-shadow:0 8px 20px rgba(251,113,133,.3)}
+  .req-ok{display:none;text-align:center;font-size:12px;line-height:1.8;color:var(--green);
+    padding:14px;border-radius:14px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4)}
+  .req-ok.on{display:block}
+  .req-error{display:none;margin:0;padding:8px 10px;border-radius:10px;
+    font-size:11px;color:#fca5a5;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.35)}
+  .req-error.on{display:block}
+
+  /* ارتباط با ما */
+  .msg-list{display:flex;flex-direction:column;gap:9px}
+  .msg-card{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;cursor:pointer;
+    background:rgba(27,36,55,.7);border:1px solid var(--line);transition:.25s}
+  .msg-card:hover{transform:translateX(3px);border-color:var(--gold)}
+  .msg-card .badge{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;overflow:hidden}
+  .msg-card .badge img{width:100%;height:100%;display:block;object-fit:contain}
+  .msg-card.tg .badge{background:rgba(56,178,239,.18);color:#7dd3fc}
+  .msg-card.bale .badge{background:rgba(52,211,153,.17);color:#6ee7b7}
+  .msg-card.ticket .badge{background:rgba(251,191,36,.17);color:#fbbf24}
+  .msg-card b{display:block;font-size:12px;color:#e8edf7}
+  .msg-card small{display:block;font-size:10px;color:#94a3bd;margin-top:3px}
+  .ticket-form{display:none;flex-direction:column;gap:9px;padding:12px;border-radius:14px;
+    background:rgba(13,20,36,.65);border:1px solid var(--line)}
+  .ticket-form.on{display:flex}
+  .ticket-form .req-submit{padding:10px}
+  .toast{position:absolute;left:14px;right:14px;bottom:16px;z-index:20;padding:11px;
+    border-radius:13px;text-align:center;font-size:11px;color:#e8edf7;
+    background:rgba(20,27,43,.96);border:1px solid var(--accent-2);
+    opacity:0;transform:translateY(12px);pointer-events:none;transition:.28s}
+  .toast.on{opacity:1;transform:none}
+
+  /* صفحهٔ فروشگاه */
+  .store{position:absolute;inset:0;z-index:13;overflow-y:auto;
+    padding:18px 14px 22px;display:flex;flex-direction:column;gap:13px;
+    background:radial-gradient(circle at 70% 5%,#33202a,#120d16 62%);
+    transform:translateY(100%);transition:transform .36s cubic-bezier(.22,.9,.25,1)}
+  .store.on{transform:translateY(0)}
+  .store-head{display:flex;align-items:center;justify-content:space-between}
+  .store-head strong{font-size:17px;color:var(--gold)}
+  .store-head button{width:34px;height:34px;border-radius:11px;cursor:pointer;
+    background:rgba(251,146,60,.14);border:1px solid rgba(251,146,60,.45);color:#fff5ec;font-size:18px}
+  .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .game-card{padding:8px;border-radius:16px;cursor:pointer;transition:.25s;
+    background:rgba(20,27,43,.75);border:1px solid var(--line)}
+  .game-card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+  .game-card img{width:100%;border-radius:11px;display:block}
+  .game-card b{display:block;font-size:11px;text-align:center;margin-top:7px;color:#e8edf7}
+  .bazaar{display:none;width:100%;text-align:center;padding:11px;border-radius:999px;
+    text-decoration:none;font-size:13px;font-weight:800;color:#06291a;
+    background:linear-gradient(135deg,#34d399,#22c55e);box-shadow:0 8px 20px rgba(34,197,94,.35)}
+  .detail.from-store .bazaar{display:block}
+
+  /* پنجرهٔ جزئیات دانلود */
+  .sheet-scrim{position:absolute;inset:0;z-index:15;background:rgba(8,5,10,.62);
+    opacity:0;pointer-events:none;transition:opacity .28s}
+  .sheet-scrim.on{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:16;max-height:80%;overflow-y:auto;
+    padding:18px 16px 20px;border-radius:22px 22px 0 0;
+    background:linear-gradient(180deg,rgba(20,27,43,.98),rgba(11,15,25,.98));
+    border-top:1px solid rgba(251,146,60,.55);box-shadow:0 -18px 44px rgba(0,0,0,.55);
+    transform:translateY(100%);transition:transform .34s cubic-bezier(.22,.9,.25,1);
+    display:flex;flex-direction:column;gap:11px}
+  .sheet.on{transform:translateY(0)}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between}
+  .sheet-head strong{font-size:16px;color:var(--gold)}
+  .sheet-head button{width:32px;height:32px;border-radius:10px;cursor:pointer;
+    background:rgba(251,146,60,.14);border:1px solid rgba(251,146,60,.4);color:#fff5ec;font-size:18px}
+  .sheet-status{display:flex;justify-content:space-between;font-size:12px;color:#e8edf7}
+  .sheet-status b{color:var(--accent-2)}
+  .track{height:9px;border-radius:999px;background:#0a1020;border:1px solid var(--line);overflow:hidden}
+  .fill{height:100%;width:42%;border-radius:999px;
+    background:linear-gradient(90deg,#6d5efc,#22d3ee,#fbbf24);background-size:200% 100%;
+    animation:shimmer 2.4s linear infinite}
+  @keyframes shimmer{to{background-position:200% 0}}
+  .sheet-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;
+    background:rgba(27,36,55,.65);border:1px solid var(--line);font-size:11px;color:#e8edf7}
+  .sheet-row i{width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;
+    background:rgba(109,94,252,.2);color:var(--purple);font-style:normal;font-size:12px}
+  .sheet-row small{display:block;color:#94a3bd;font-size:9px;margin-top:2px;direction:ltr;text-align:right}
+  /* برند farsipsx — بدون کادر، با درخشش متحرک */
+  .brand-row{display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:6px 0 2px;background:none;border:0;opacity:0}
+  .sheet.on .brand-row{animation:brandIn .7s ease .25s forwards,
+    brandGlow 2.6s ease-in-out .9s infinite alternate}
+  .brand-row b{direction:ltr;font-size:23px;font-weight:900;letter-spacing:.6px;color:#fbbf24;text-align:center;
+    text-shadow:0 0 6px rgba(251,191,36,.75),0 0 14px rgba(251,146,60,.45),0 2px 4px #000}
+  .brand-row small{font-size:11px;color:#e8edf7;display:flex;gap:5px;
+    flex-wrap:wrap;justify-content:center;direction:rtl}
+  .brand-row small span{display:inline-block;opacity:0;filter:blur(5px);
+    transform:translateY(9px) scale(.92)}
+  .sheet.on .brand-row small span{animation:wordFlow 12s cubic-bezier(.25,.8,.25,1) infinite}
+  .sheet.on .brand-row small span:nth-child(1){animation-delay:0s}
+  .sheet.on .brand-row small span:nth-child(2){animation-delay:.55s}
+  .sheet.on .brand-row small span:nth-child(3){animation-delay:1.1s}
+  .sheet.on .brand-row small span:nth-child(4){animation-delay:1.65s}
+  .sheet.on .brand-row small span:nth-child(5){animation-delay:2.2s}
+  @keyframes wordFlow{
+    0%{opacity:0;filter:blur(7px);transform:translateY(12px) scale(.9)}
+    16%{opacity:1;filter:blur(0);transform:none}
+    58%{opacity:1;filter:blur(0);transform:none}
+    76%{opacity:0;filter:blur(6px);transform:translateY(-10px) scale(.97)}
+    100%{opacity:0;filter:blur(7px);transform:translateY(12px) scale(.9)}}
+  @keyframes brandIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
+  @keyframes brandGlow{
+    from{text-shadow:0 0 6px rgba(251,191,36,.75),0 0 14px rgba(251,146,60,.45),0 2px 4px #000}
+    to{text-shadow:0 0 13px rgba(251,191,36,1),0 0 30px rgba(251,113,133,.85),0 2px 6px #000}}
+
+  /* همان برند در پایین ترین قسمت لانچر */
+  .brand-footer{position:absolute;left:0;right:0;bottom:8px;z-index:5;pointer-events:none;
+    transition:opacity .35s ease}
+  .brand-footer .brand-row{opacity:1;
+    animation:brandIn .7s ease .2s both,brandGlow 2.6s ease-in-out .9s infinite alternate}
+  .brand-footer .brand-row small span{animation:wordFlow 12s cubic-bezier(.25,.8,.25,1) infinite}
+  .brand-footer .brand-row small span:nth-child(1){animation-delay:0s}
+  .brand-footer .brand-row small span:nth-child(2){animation-delay:.55s}
+  .brand-footer .brand-row small span:nth-child(3){animation-delay:1.1s}
+  .brand-footer .brand-row small span:nth-child(4){animation-delay:1.65s}
+  .brand-footer .brand-row small span:nth-child(5){animation-delay:2.2s}
+  .phone.launching .brand-footer{opacity:0}
+
+  .sheet-actions{display:flex;gap:9px;margin-top:2px}
+  .sheet-actions span{flex:1;text-align:center;padding:10px;border-radius:999px;font-size:12px;font-weight:800;color:#fff}
+  .pause{background:linear-gradient(135deg,#6d5efc,#22d3ee)}
+  .cancel{background:linear-gradient(135deg,#fb7185,#fb923c)}
+
+  /* پنجرهٔ تنظیمات */
+  .set-scrim{position:absolute;inset:0;z-index:17;background:rgba(8,5,10,.66);
+    opacity:0;pointer-events:none;transition:opacity .28s}
+  .set-scrim.on{opacity:1;pointer-events:auto}
+  .set-sheet{position:absolute;left:0;right:0;bottom:0;z-index:18;max-height:82%;overflow-y:auto;
+    padding:18px 16px 22px;border-radius:22px 22px 0 0;
+    background:linear-gradient(180deg,rgba(20,27,43,.98),rgba(11,15,25,.98));
+    border-top:1px solid rgba(109,94,252,.65);box-shadow:0 -18px 44px rgba(0,0,0,.55);
+    transform:translateY(100%);transition:transform .34s cubic-bezier(.22,.9,.25,1);
+    display:flex;flex-direction:column;gap:13px}
+  .set-sheet.on{transform:translateY(0)}
+  .set-head{display:flex;align-items:center;justify-content:space-between}
+  .set-head strong{font-size:16px;color:var(--purple)}
+  .set-head button{width:32px;height:32px;border-radius:10px;cursor:pointer;
+    background:rgba(109,94,252,.16);border:1px solid rgba(167,139,250,.45);color:#e8edf7;font-size:18px}
+  .set-group label{display:block;font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:700}
+  .opts{display:flex;gap:7px;flex-wrap:wrap}
+  .opt{flex:1;min-width:60px;text-align:center;padding:9px 4px;border-radius:999px;cursor:pointer;
+    font-size:11px;font-weight:600;color:#e8edf7;background:rgba(27,36,55,.8);border:1px solid var(--line);
+    transition:.25s;user-select:none}
+  .opt.sel{color:#fff;background:linear-gradient(135deg,#6d5efc,#22d3ee);border-color:transparent;
+    box-shadow:0 6px 18px rgba(109,94,252,.4)}
+  .set-group + .set-group{border-top:1px solid var(--line);padding-top:12px}
+  @keyframes pulseCover{
+    from{box-shadow:0 14px 38px rgba(0,0,0,.6),0 0 0 3px rgba(251,146,60,.6),0 0 22px rgba(251,146,60,.35)}
+    to{box-shadow:0 14px 38px rgba(0,0,0,.6),0 0 0 3px rgba(34,211,238,.85),0 0 36px rgba(167,139,250,.5)}}
+  .gname{font-size:17px;font-weight:800;text-align:center;text-shadow:0 2px 9px #000}
+  .btns{display:flex;width:100%;gap:10px}
+  .btn{flex:1;text-align:center;padding:11px 5px;border-radius:999px;font-size:13px;font-weight:800;color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);white-space:nowrap}
+  /* اجرا: گرم — دریافت: رنگ پنل */
+  .play{background:linear-gradient(135deg,#fbbf24,#fb7185)}
+  .dl{background:linear-gradient(135deg,#6d5efc,#22d3ee)}
+  .set{width:58%;flex:none;padding:8px 5px;border-radius:999px;font-size:12px;font-weight:600;
+    color:#e8edf7;background:rgba(11,15,25,.55);border:1.5px solid rgba(109,94,252,.8)}
+
+  /* درخواست محترمانهٔ امتیاز هنگام خروج */
+  .rate-scrim{position:absolute;inset:0;z-index:28;background:rgba(5,7,13,.78);
+    backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .3s}
+  .rate-scrim.on{opacity:1;pointer-events:auto}
+  .rate-box{position:absolute;z-index:29;top:50%;left:50%;width:86%;padding:20px 18px;
+    border-radius:22px;text-align:center;
+    background:linear-gradient(180deg,rgba(27,36,55,.98),rgba(11,15,25,.98));
+    border:1px solid rgba(251,191,36,.5);box-shadow:0 24px 60px rgba(0,0,0,.7);
+    transform:translate(-50%,-42%) scale(.94);opacity:0;pointer-events:none;transition:.32s}
+  .rate-box.on{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
+  .rate-box .star-ico{font-size:30px;line-height:1;filter:drop-shadow(0 0 12px rgba(251,191,36,.7))}
+  .rate-box h3{margin:8px 0 6px;font-size:16px;color:var(--gold)}
+  .rate-box p{margin:0 0 12px;font-size:11px;line-height:1.9;color:#d8c4cf}
+  .stars{display:flex;justify-content:center;gap:5px;direction:ltr;margin-bottom:8px}
+  .stars span{cursor:pointer;font-size:30px;line-height:1;color:rgba(148,163,189,.45);
+    transition:transform .2s,color .2s,filter .2s}
+  .stars span:hover{transform:scale(1.18)}
+  .stars span.lit{color:var(--gold);filter:drop-shadow(0 0 9px rgba(251,191,36,.85))}
+  .rate-hint{min-height:16px;font-size:10px;color:var(--muted,#94a3bd);margin-bottom:10px}
+  .rate-go{display:block;padding:11px;border-radius:999px;font-size:12px;font-weight:800;
+    color:#06291a;background:linear-gradient(135deg,#34d399,#22c55e);opacity:.45;pointer-events:none;
+    transition:.25s}
+  .rate-go.ready{opacity:1;pointer-events:auto;box-shadow:0 8px 20px rgba(34,197,94,.3)}
+  .rate-later{margin-top:9px;padding:8px 14px;border-radius:999px;cursor:pointer;font-size:11px;
+    color:#e8edf7;background:none;border:1px solid var(--line)}
+  .rate-later:hover{border-color:var(--gold);color:var(--gold)}
+  .exit-screen{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:14px;text-align:center;
+    background:radial-gradient(circle at 50% 40%,#241726,#080b14 72%);
+    opacity:0;pointer-events:none;transition:opacity .4s}
+  .exit-screen.on{opacity:1;pointer-events:auto}
+  .exit-screen h3{margin:0;font-size:16px;color:var(--gold)}
+  .exit-screen p{margin:0;font-size:11px;color:#d8c4cf;line-height:1.9;padding:0 24px}
+  .exit-screen button{padding:10px 20px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:800;
+    color:#fff;background:linear-gradient(135deg,var(--purple),var(--cyan));border:0}
+
+  /* بازیهای پیشنهادی — ردیف افقی پایین صفحه */
+  .suggest{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:12px 12px 16px;background:none;
+    transition:opacity .35s ease,transform .35s ease}
+  .phone.launching .suggest{opacity:0;pointer-events:none;transform:translateY(18px)}
+  .suggest h4{margin:0 0 10px;font-size:12px;color:var(--gold);font-weight:700;text-align:center;
+    text-shadow:0 2px 10px rgba(0,0,0,.85)}
+  .suggest-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;justify-content:center;
+    scrollbar-width:none;scrollbar-color:transparent transparent}
+  .suggest-row::-webkit-scrollbar{display:none}
+  .sug-card{flex:none;width:92px;cursor:pointer;text-align:center;transition:.25s}
+  .sug-card:hover{transform:translateY(-4px)}
+  .sug-card:hover img{border-color:var(--gold);box-shadow:0 10px 24px rgba(251,146,60,.45)}
+  .sug-card img{width:100%;border-radius:13px;display:block;border:1px solid rgba(251,191,36,.35);
+    box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 18px rgba(251,146,60,.16)}
+  .sug-card b{display:block;font-size:11px;color:#e8edf7;margin-top:6px;text-shadow:0 2px 8px #000;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+  <div class="note">پیشنمایش زندهٔ <b>غروب آتشفشانی + رنگ پنل</b> — هنوز روی اپ اعمال نشده است. رنگهای بنفش/فیروزهای/سبز از پنل لوکال گرفته شدهاند و بهآرامی با رنگهای آتشفشانی جابهجا میشوند.</div>
+  <div class="ctrl"><button class="mini-btn" id="data-toggle">دیتا دانلود شد</button><button class="mini-btn" id="back-test">دکمهٔ برگشت</button>بالا رفتن کادر: <input type="range" id="up" min="0" max="190" value="125"><b id="upv">125px</b></div>
+  <div class="phone">
+    <button class="burger" id="burger" aria-label="منو"><i></i><i></i><i></i></button>
+    <div class="scrim" id="scrim"></div>
+    <div class="drawer" id="drawer">
+      <div class="drawer-head"><strong>منو</strong><small>farsipsx</small></div>
+      <div class="drawer-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1.4 12H5.4L4 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>
+        <span><b>فروشگاه</b><em>بازیهای آمادهٔ پلیاستیشن</em></span>
+      </div>
+      <div class="drawer-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></span>
+        <span><b>درخواست فارسی سازی بازی دلخواه</b><em>برای ما بازی مورد نظرتان را بفرستید</em></span>
+      </div>
+      <div class="drawer-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3 1.2-5.2A8 8 0 1 1 21 12Z"/></svg></span>
+        <span><b>ارتباط با ما</b><em>پشتیبانی و پیشنهادها</em></span>
+      </div>
+      <a class="drawer-item" href="site.html" target="_blank" rel="noopener">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+        <span><b>سایت farsipsx</b><em>همه بازیها در یکجا</em></span>
+      </a>
+      <div class="drawer-item" id="exit-menu">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M15 16l4-4-4-4M19 12H9"/></svg></span>
+        <span><b>خروج از برنامه</b><em>پیش از رفتن، نظرتان را بگویید</em></span>
+      </div>
+    </div>
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+    <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div><div class="spark s4"></div><div class="spark s5"></div>
+    <div class="spark extra s6"></div><div class="spark extra s7"></div><div class="spark extra s8"></div><div class="spark extra s9"></div>
+    <div class="spark extra s10"></div><div class="spark extra s11"></div><div class="spark extra s12"></div><div class="spark extra s13"></div>
+    <div class="spark extra s14"></div><div class="spark extra s15"></div><div class="spark extra s16"></div><div class="spark extra s17"></div>
+    <div class="spark extra s18"></div><div class="spark extra s19"></div><div class="spark extra s20"></div><div class="spark extra s21"></div>
+    <div class="spark extra s22"></div><div class="spark extra s23"></div><div class="spark extra s24"></div>
+    <div class="screen">
+      <div class="panel">
+        <img class="cover" src="cover.jpg" alt="cover">
+        <div class="gname">زنوگیرز (دیسک ۱)</div>
+        <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+        <div class="btn set">تنظیمات</div>
+      </div>
+    </div>
+    <div class="suggest">
+      <h4>بازیهای پیشنهادی</h4>
+      <div class="suggest-row">
+        <div class="sug-card" data-name="اسپایدرمن" data-meta="پلتفرم: پلیاستیشن | اکشن | ۲۰۰۰" data-desc="ماجراجویی مرد عنکبوتی در شهر نیویورک؛ با قدرتهای ویژه و نبرد با دشمنان مختلف."><img src="cover.jpg" alt="" style="filter:hue-rotate(200deg)"><b>اسپایدرمن</b></div>
+        <div class="sug-card" data-name="کراش باندیکوت" data-meta="پلتفرم: پلیاستیشن | پلتفرمر | ۱۹۹۶" data-desc="کراش باید جعبههای مرموز را جمع کند و دکتر کورتکس را شکست دهد."><img src="cover.jpg" alt="" style="filter:hue-rotate(85deg)"><b>کراش باندیکوت</b></div>
+        <div class="sug-card" data-name="تکن ۳" data-meta="پلتفرم: پلیاستیشن | مبارزهای | ۱۹۹۷" data-desc="مسابقات مبارزهٔ سهبعدی با شخصیتهای متنوع و سیستم ترکیب ضربات."><img src="cover.jpg" alt="" style="filter:hue-rotate(25deg)"><b>تکن ۳</b></div>
+        <div class="sug-card" data-name="رزیدنت ایول ۳" data-meta="پلتفرم: پلیاستیشن | ترسناک | ۱۹۹۷" data-desc="جیل در شهر راکون با گسترش ویروس و دشمنان خطرناک روبهرو میشود."><img src="cover.jpg" alt="" style="filter:hue-rotate(320deg)"><b>رزیدنت ایول ۳</b></div>
+        <div class="sug-card" data-name="متال گیر سالید" data-meta="پلتفرم: پلیاستیشن | مخفی کاری | ۱۹۹۸" data-desc="اسنیک مأموریت نفوذ به پایگاه دشمن و جلوگیری از سلاح هستهای را بر عهده دارد."><img src="cover.jpg" alt="" style="filter:hue-rotate(150deg)"><b>متال گیر سالید</b></div>
+        <div class="sug-card" data-name="فاینال فانتزی ۷" data-meta="پلتفرم: پلیاستیشن | نقشآفرینی | ۱۹۹۷" data-desc="کلود و گروهش علیه شرکتی قدرتمند میجنگند تا سیاره را نجات دهند."><img src="cover.jpg" alt="" style="filter:hue-rotate(270deg)"><b>فاینال فانتزی ۷</b></div>
+        <div class="sug-card" data-name="خدای جنگ" data-meta="پلتفرم: پلیاستیشن | اکشن | ۲۰۰۵" data-desc="کراتوس، جنگجوی اسپارتی، سفری پر از نبرد علیه خدایان المپ را آغاز میکند."><img src="cover.jpg" alt="" style="filter:hue-rotate(12deg)"><b>خدای جنگ</b></div>
+        <div class="sug-card" data-name="مستر شیف" data-meta="پلتفرم: پلیاستیشن | ماجراجویی | ۲۰۰۱" data-desc="سفری در دنیای باستانی با معماها و آثار باستانی فراموششده."><img src="cover.jpg" alt="" style="filter:hue-rotate(45deg)"><b>مستر شیف</b></div>
+      </div>
+    </div>
+    <div class="brand-footer">
+      <div class="brand-row"><b dir="ltr">farsipsx</b><small><span>لذت</span><span>بازی</span><span>با</span><span>زبان</span><span>فارسی</span></small></div>
+    </div>
+    <div class="detail" id="detail">
+      <button class="close" id="detail-close" aria-label="بستن">×</button>
+      <img class="big-cover" src="cover.jpg" alt="کاور بزرگ بازی">
+      <h3>زنوگیرز (دیسک ۱)</h3>
+      <div class="meta">
+        <span>پلتفرم: پلیاستیشن</span><span>دیسک ۱ از ۲</span><span>سال ۱۹۹۸</span><span>ترجمه: فارسی</span>
+      </div>
+      <p class="desc">زنوگیرز داستان سفری است به دنیایی به نام لده اینفینیتی، جایی که فاجعههای ناشناخته و رازهای باستانی در هم تنیدهاند. داستان با فی، پسر جوانی از روستای کورالیان آغاز میشود که به همراه دوستانش وارد ماجرایی میشود که سرنوشت جهان را رقم میزند.<br>این بازی با نبردهای نوبتی عمیق، سیستم رشد شخصیت و روباتهای غولپیکر «گییر» تجربهای متفاوت از نقشآفرینیهای کلاسیک ارائه میدهد. موسیقی و داستان آن از مهمترین ویژگیهای این اثر به شمار میروند.</p>
+      <a class="bazaar" id="bazaar" href="https://cafebazaar.ir/" target="_blank" rel="noopener">دانلود از کافه بازار</a>
+    </div>
+    <div class="store" id="store">
+      <div class="store-head"><strong>فروشگاه</strong><button id="store-close" aria-label="بستن">×</button></div>
+      <div class="games-grid">
+        <div class="game-card" data-name="اسپایدرمن" data-meta="پلتفرم: پلیاستیشن | اکشن | ۲۰۰۰" data-desc="ماجراجویی مرد عنکبوتی در شهر نیویورک؛ با قدرتهای ویژه و نبرد با دشمنان مختلف."><img src="cover.jpg" alt="" style="filter:hue-rotate(200deg)"><b>اسپایدرمن</b></div>
+        <div class="game-card" data-name="کراش باندیکوت" data-meta="پلتفرم: پلیاستیشن | پلتفرمر | ۱۹۹۶" data-desc="کراش باید جعبههای مرموز را جمع کند و دکتر کورتکس را شکست دهد."><img src="cover.jpg" alt="" style="filter:hue-rotate(85deg)"><b>کراش باندیکوت</b></div>
+        <div class="game-card" data-name="تکن ۳" data-meta="پلتفرم: پلیاستیشن | مبارزهای | ۱۹۹۷" data-desc="مسابقات مبارزهٔ سهبعدی با شخصیتهای متنوع و سیستم ترکیب ضربات."><img src="cover.jpg" alt="" style="filter:hue-rotate(25deg)"><b>تکن ۳</b></div>
+        <div class="game-card" data-name="رزیدنت ایول ۳" data-meta="پلتفرم: پلیاستیشن | ترسناک | ۱۹۹۷" data-desc="جیل در شهر راکون با گسترش ویروس و دشمنان خطرناک روبهرو میشود."><img src="cover.jpg" alt="" style="filter:hue-rotate(320deg)"><b>رزیدنت ایول ۳</b></div>
+        <div class="game-card" data-name="متال گیر سالید" data-meta="پلتفرم: پلیاستیشن | مخفی کاری | ۱۹۹۸" data-desc="اسنیک مأموریت نفوذ به پایگاه دشمن و جلوگیری از سلاح هستهای را بر عهده دارد."><img src="cover.jpg" alt="" style="filter:hue-rotate(150deg)"><b>متال گیر سالید</b></div>
+        <div class="game-card" data-name="فاینال فانتزی ۷" data-meta="پلتفرم: پلیاستیشن | نقشآفرینی | ۱۹۹৭" data-desc="کلود و گروهش علیه شرکتی قدرتمند میجنگند تا سیاره را نجات دهند."><img src="cover.jpg" alt="" style="filter:hue-rotate(270deg)"><b>فاینال فانتزی ۷</b></div>
+        <div class="game-card" data-name="خدای جنگ" data-meta="پلتفرم: پلیاستیشن | اکشن | ۲۰۰۵" data-desc="کراتوس، جنگجوی اسپارتی، سفری پر از نبرد علیه خدایان المپ را آغاز میکند."><img src="cover.jpg" alt="" style="filter:hue-rotate(12deg)"><b>خدای جنگ</b></div>
+        <div class="game-card" data-name="مستر شیف" data-meta="پلتفرم: پلیاستیشن | ماجراجویی | ۲۰۰۱" data-desc="سفری در دنیای باستانی با معماها و آثار باستانی فراموششده."><img src="cover.jpg" alt="" style="filter:hue-rotate(45deg)"><b>مستر شیف</b></div>
+      </div>
+    </div>
+    <div class="request" id="request">
+      <div class="store-head"><strong>درخواست فارسی سازی</strong><button id="req-close" aria-label="بستن">×</button></div>
+      <p class="req-lead">بازی مورد نظرتان را معرفی کنید. اگر فایلی (مانند متن ترجمه یا عکس) لازم است، آنرا هم پیوست کنید.</p>
+      <form class="req-card" id="req-form">
+        <div class="field"><label>نام بازی</label><input type="text" placeholder="مثلاً کرونو کراس"></div>
+        <p class="req-error" id="req-error">لطفاً نام بازی را وارد کنید.</p>
+        <div class="field"><label>توضیح (اختیاری)</label><textarea rows="3" placeholder="توضیحاتی دربارهٔ بازی یا ترجمهٔ مورد نظر…"></textarea></div>
+        <div class="field"><label>فایل (اختیاری)</label>
+          <label class="file-drop"><i>⬆</i><span id="file-name">برای پیوست فایل کلیک کنید</span><input type="file" id="req-file"></label>
+        </div>
+        <button type="submit" class="req-submit">ارسال درخواست</button>
+      </form>
+      <div class="req-ok" id="req-ok">✅ درخواست شما ثبت شد. بزودی نتیجه را اطلاع میدهیم.</div>
+    </div>
+    <div class="request contact" id="contact">
+      <div class="store-head"><strong>ارتباط با ما</strong><button id="contact-close" aria-label="بستن">×</button></div>
+      <p class="req-lead">هر سؤال، پیشنهاد یا مشکلی داشتید، از یکی از راههای زیر اقدام کنید.</p>
+      <div class="msg-list">
+        <div class="msg-card tg" data-toast="پیام تلگرام در نسخهٔ نهایی به این بخش متصل میشود.">
+          <span class="badge"><img src="telegram.svg" alt="تلگرام"></span><span><b>تلگرام</b><small>پیام سریع و مستقیم</small></span>
+        </div>
+        <div class="msg-card bale" data-toast="گفتگوی بله در نسخهٔ نهایی به این بخش متصل میشود.">
+          <span class="badge"><img src="bale.svg" alt="بله"></span><span><b>بله</b><small>ارتباط آنلاین با پشتیبانی</small></span>
+        </div>
+        <div class="msg-card ticket" id="ticket-toggle">
+          <span class="badge">🎫</span><span><b>ارسال تیکت</b><small>ثبت پیام و پیگیری آن</small></span>
+        </div>
+      </div>
+      <form class="ticket-form" id="ticket-form">
+        <div class="field"><label>عنوان پیام</label><input type="text" id="ticket-title" placeholder="موضوع پیام"></div>
+        <div class="field"><label>متن پیام</label><textarea id="ticket-body" rows="3" placeholder="پیام خود را بنویسید…"></textarea></div>
+        <p class="req-error" id="ticket-error">لطفاً عنوان و متن پیام را وارد کنید.</p>
+        <button type="submit" class="req-submit">ارسال تیکت</button>
+        <div class="req-ok" id="ticket-ok">✅ تیکت شما ثبت شد. بزودی پاسخ میدهیم.</div>
+      </form>
+    </div>
+    <div class="rate-scrim" id="rate-scrim"></div>
+    <div class="rate-box" id="rate-box">
+      <div class="star-ico">⭐</div>
+      <h3>نظرتان برای ما مهم است</h3>
+      <p>اگر از تجربهٔ بازی راضی بودید، لطفاً یک ستاره انتخاب کنید و سپس در کافه بازار ثبت نمایید. حمایت شما ما را قویتر میکند.</p>
+      <div class="stars" id="stars">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <div class="rate-hint" id="rate-hint">ستارهای که میخواهید بدهید را انتخاب کنید</div>
+      <a class="rate-go" id="rate-go" href="https://cafebazaar.ir/" target="_blank" rel="noopener">ثبت امتیاز در کافه بازار</a>
+      <button class="rate-later" id="rate-later">بعداً، ممنون</button>
+    </div>
+    <div class="exit-screen" id="exit-screen">
+      <div class="star-ico">👋</div>
+      <h3>از وقتی که گذاشتید ممنونیم</h3>
+      <p>تا دیداری دیگر... اگر نظرتان عوض شد، دوباره از منو اقدام کنید.</p>
+      <button id="exit-back">بازگشت به لانچر</button>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="sheet-scrim" id="sheet-scrim"></div>
+    <div class="sheet" id="sheet">
+      <div class="sheet-head"><strong>دریافت دیتا</strong><button id="sheet-close" aria-label="بستن">×</button></div>
+      <div class="sheet-status"><span>در حال دریافت بستهٔ بازی…</span><b>۴۲٪</b></div>
+      <div class="track"><div class="fill"></div></div>
+      <div class="sheet-row"><i>◈</i><span>فایل دیتای بازی<small>۳۰۲ از ۷۱۸ مگابایت</small></span></div>
+      <div class="sheet-row"><i>◉</i><span>بستهٔ بایوس<small>در انتظار</small></span></div>
+      <div class="brand-row"><b dir="ltr">farsipsx</b><small><span>لذت</span><span>بازی</span><span>با</span><span>زبان</span><span>فارسی</span></small></div>
+      <div class="sheet-actions"><span class="pause">مکث</span><span class="cancel">لغو</span></div>
+    </div>
+    <div class="set-scrim" id="set-scrim"></div>
+    <div class="set-sheet" id="set-sheet">
+      <div class="set-head"><strong>تنظیمات</strong><button id="set-close" aria-label="بستن">×</button></div>
+      <div class="set-group"><label>گرافیک بازی</label>
+        <div class="opts"><span class="opt sel">بهینه</span><span class="opt">معمولی</span><span class="opt">بالا</span><span class="opt">خیلی بالا</span></div>
+      </div>
+    </div>
+  </div>
+<script>
+  const up = document.getElementById('up');
+  const out = document.getElementById('upv');
+  up.addEventListener('input', () => {
+    document.documentElement.style.setProperty('--up', up.value + 'px');
+    out.textContent = up.value + 'px';
+  });
+  const sugCards = [...document.querySelectorAll('.sug-card')];
+  for (let i = sugCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [sugCards[i], sugCards[j]] = [sugCards[j], sugCards[i]];
+  }
+  sugCards.forEach(c => c.style.display = 'none');
+  sugCards.slice(0, 3).forEach(c => c.style.display = '');
+  const suggest = document.querySelector('.suggest');
+  function placeSuggest(){
+    const ph = document.querySelector('.phone').getBoundingClientRect();
+    const pb = document.querySelector('.panel').getBoundingClientRect();
+    suggest.style.top = Math.round(pb.bottom - ph.top + 20) + 'px';
+    suggest.style.bottom = 'auto';
+  }
+  up.addEventListener('input', placeSuggest);
+  window.addEventListener('resize', placeSuggest);
+  window.addEventListener('load', placeSuggest);
+  document.querySelector('.cover').addEventListener('load', placeSuggest);
+  placeSuggest();
+  const dataToggle = document.getElementById('data-toggle');
+  dataToggle.addEventListener('click', () => {
+    const done = document.querySelector('.phone').classList.toggle('downloaded');
+    dataToggle.textContent = done ? 'دیتا دانلود نشده' : 'دیتا دانلود شد';
+  });
+  const phone = document.querySelector('.phone');
+  document.querySelector('.play').addEventListener('click', () => {
+    phone.classList.add('launching');
+    setTimeout(() => phone.classList.add('spinning'), 4000);
+    setTimeout(() => {
+      phone.classList.remove('spinning');
+      phone.classList.add('zooming');
+    }, 6200);
+    setTimeout(() => phone.classList.remove('launching', 'zooming'), 7250);
+  });
+  const burger = document.getElementById('burger');
+  const scrim = document.getElementById('scrim');
+  const drawer = document.getElementById('drawer');
+  function toggleMenu(open){
+    burger.classList.toggle('on', open);
+    scrim.classList.toggle('on', open);
+    drawer.classList.toggle('on', open);
+  }
+  burger.addEventListener('click', () => toggleMenu(!drawer.classList.contains('on')));
+  scrim.addEventListener('click', () => toggleMenu(false));
+  const detail = document.getElementById('detail');
+  const store = document.getElementById('store');
+  const request = document.getElementById('request');
+  const contact = document.getElementById('contact');
+  const toast = document.getElementById('toast');
+  const orig = {
+    title: detail.querySelector('h3').innerHTML,
+    meta: detail.querySelector('.meta').innerHTML,
+    desc: detail.querySelector('.desc').innerHTML
+  };
+  function openDetail(fromStore){
+    toggleMenu(false);
+    store.classList.remove('on');
+    request.classList.remove('on');
+    contact.classList.remove('on');
+    detail.classList.toggle('from-store', !!fromStore);
+    detail.classList.add('on');
+  }
+  document.querySelectorAll('.drawer-item').forEach(el =>
+    el.addEventListener('click', () => toggleMenu(false)));
+  document.querySelector('.drawer-item').addEventListener('click', () => {
+    request.classList.remove('on');
+    contact.classList.remove('on');
+    store.classList.add('on');
+  });
+  document.querySelectorAll('.drawer-item')[1].addEventListener('click', () => {
+    store.classList.remove('on');
+    contact.classList.remove('on');
+    request.classList.add('on');
+  });
+  document.querySelectorAll('.drawer-item')[2].addEventListener('click', () => {
+    store.classList.remove('on');
+    request.classList.remove('on');
+    contact.classList.add('on');
+  });
+  document.getElementById('store-close').addEventListener('click', () => store.classList.remove('on'));
+  document.getElementById('contact-close').addEventListener('click', () => contact.classList.remove('on'));
+  const rateScrim = document.getElementById('rate-scrim');
+  const rateBox = document.getElementById('rate-box');
+  const starEls = [...document.querySelectorAll('#stars span')];
+  const rateGo = document.getElementById('rate-go');
+  const exitScreen = document.getElementById('exit-screen');
+  function openRate(){
+    toggleMenu(false);
+    detail.classList.remove('on');
+    store.classList.remove('on');
+    request.classList.remove('on');
+    contact.classList.remove('on');
+    toggleSheet(false);
+    toggleSettings(false);
+    rateScrim.classList.add('on');
+    rateBox.classList.add('on');
+  }
+  function closeRate(){
+    rateScrim.classList.remove('on');
+    rateBox.classList.remove('on');
+  }
+  starEls.forEach((s, i) => s.addEventListener('click', () => {
+    starEls.forEach((x, j) => x.classList.toggle('lit', j <= i));
+    document.getElementById('rate-hint').textContent = `شما ${s.dataset.v} ستاره انتخاب کردید — ممنونیم!`;
+    rateGo.classList.add('ready');
+  }));
+  rateScrim.addEventListener('click', closeRate);
+  document.getElementById('rate-later').addEventListener('click', () => {
+    closeRate();
+    exitScreen.classList.add('on');
+  });
+  document.getElementById('exit-back').addEventListener('click', () => exitScreen.classList.remove('on'));
+  document.getElementById('exit-menu').addEventListener('click', openRate);
+  document.getElementById('back-test').addEventListener('click', openRate);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !exitScreen.classList.contains('on')) openRate();
+  });
+  let toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('on'), 2600);
+  }
+  document.querySelectorAll('.msg-card[data-toast]').forEach(card =>
+    card.addEventListener('click', () => showToast(card.dataset.toast)));
+  document.getElementById('ticket-toggle').addEventListener('click', () =>
+    document.getElementById('ticket-form').classList.toggle('on'));
+  document.getElementById('ticket-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const title = document.getElementById('ticket-title');
+    const body = document.getElementById('ticket-body');
+    const err = document.getElementById('ticket-error');
+    if (!title.value.trim() || !body.value.trim()) {
+      err.classList.add('on');
+      document.getElementById('ticket-ok').classList.remove('on');
+      return;
+    }
+    err.classList.remove('on');
+    document.getElementById('ticket-ok').classList.add('on');
+    e.target.reset();
+  });
+  document.getElementById('req-close').addEventListener('click', () => request.classList.remove('on'));
+  document.getElementById('req-file').addEventListener('change', e => {
+    document.getElementById('file-name').textContent = e.target.files[0]?.name || 'برای پیوست فایل کلیک کنید';
+  });
+  document.getElementById('req-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = e.target.querySelector('input[type="text"]');
+    const err = document.getElementById('req-error');
+    if (!name.value.trim()) {
+      err.classList.add('on');
+      document.getElementById('req-ok').classList.remove('on');
+      name.focus();
+      return;
+    }
+    err.classList.remove('on');
+    document.getElementById('req-ok').classList.add('on');
+    e.target.reset();
+    document.getElementById('file-name').textContent = 'برای پیوست فایل کلیک کنید';
+  });
+  document.querySelectorAll('.game-card, .sug-card').forEach(card =>
+    card.addEventListener('click', () => {
+      detail.querySelector('h3').textContent = card.dataset.name;
+      detail.querySelector('.meta').innerHTML = `<span>${card.dataset.meta}</span><span>ترجمه: فارسی</span>`;
+      detail.querySelector('.desc').textContent = card.dataset.desc;
+      const img = detail.querySelector('.big-cover');
+      img.style.filter = card.querySelector('img').style.filter;
+      openDetail(true);
+    }));
+  document.querySelector('.cover').addEventListener('click', () => {
+    detail.querySelector('h3').innerHTML = orig.title;
+    detail.querySelector('.meta').innerHTML = orig.meta;
+    detail.querySelector('.desc').innerHTML = orig.desc;
+    detail.querySelector('.big-cover').style.filter = '';
+    openDetail(false);
+  });
+  document.getElementById('detail-close').addEventListener('click', () => {
+    detail.classList.remove('on');
+    store.classList.remove('on');
+  });
+  const sheet = document.getElementById('sheet');
+  const sheetScrim = document.getElementById('sheet-scrim');
+  function toggleSheet(open){
+    sheet.classList.toggle('on', open);
+    sheetScrim.classList.toggle('on', open);
+  }
+  document.querySelector('.dl').addEventListener('click', () => {
+    toggleMenu(false);
+    detail.classList.remove('on');
+    toggleSheet(true);
+  });
+  document.getElementById('sheet-close').addEventListener('click', () => toggleSheet(false));
+  sheetScrim.addEventListener('click', () => toggleSheet(false));
+  const setSheet = document.getElementById('set-sheet');
+  const setScrim = document.getElementById('set-scrim');
+  function toggleSettings(open){
+    setSheet.classList.toggle('on', open);
+    setScrim.classList.toggle('on', open);
+  }
+  document.querySelector('.set').addEventListener('click', () => {
+    toggleMenu(false);
+    detail.classList.remove('on');
+    contact.classList.remove('on');
+    toggleSheet(false);
+    toggleSettings(true);
+  });
+  document.getElementById('set-close').addEventListener('click', () => toggleSettings(false));
+  setScrim.addEventListener('click', () => toggleSettings(false));
+  document.querySelectorAll('.set-sheet .opts').forEach(group =>
+    group.addEventListener('click', e => {
+      if (!e.target.classList.contains('opt')) return;
+      group.querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
+      e.target.classList.add('sel');
+    }));
+  document.querySelectorAll('.store,.detail,.sheet,.set-sheet').forEach(el => {
+    let t;
+    el.addEventListener('scroll', () => {
+      el.classList.add('scrolling');
+      clearTimeout(t);
+      t = setTimeout(() => el.classList.remove('scrolling'), 700);
+    }, { passive: true });
+  });
+</script>
+</body>
+</html>

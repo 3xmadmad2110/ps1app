@@ -1,0 +1,12 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <title>Bale - بله</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#20c997"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)"/>
+  <path d="M32 12c11.6 0 21 7.9 21 17.6 0 9.8-9.4 17.7-21 17.7-2.4 0-4.8-.3-7-.9l-10.8 5.5 2.7-9.4C11.8 39.6 11 34.7 11 29.6 11 19.9 20.4 12 32 12Z" fill="#ffffff"/>
+  <text x="32" y="37" text-anchor="middle" font-size="24" font-weight="700" font-family="Tahoma, Arial, sans-serif" fill="#0ea5e9">ب</text>
+</svg>

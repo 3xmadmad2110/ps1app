@@ -10,7 +10,7 @@
     <item android:id="@android:id/progress">
         <clip android:clipOrientation="horizontal" android:gravity="left">
             <shape android:shape="rectangle">
-                <gradient android:angle="0" android:startColor="#6d5efc" android:centerColor="#a78bfa" android:endColor="#22d3ee" />
+                <gradient android:angle="0" android:startColor="#6d5efc" android:centerColor="#22d3ee" android:endColor="#fbbf24" />
                 <corners android:radius="8dp" />
             </shape>
         </clip>

@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ps1_title">DuckStation</string>
+    <!-- هویت -->
+    <string name="ps1_game_name_fa">زنوگیرز (دیسک ۱)</string>
+    <string name="ps1_brand">farsipsx</string>
+    <string name="ps1_brand_word_1">لذت</string>
+    <string name="ps1_brand_word_2">بازی</string>
+    <string name="ps1_brand_word_3">با</string>
+    <string name="ps1_brand_word_4">زبان</string>
+    <string name="ps1_brand_word_5">فارسی</string>
+
+    <!-- دکمهها و وضعیت -->
     <string name="ps1_download">دریافت دیتا</string>
     <string name="ps1_play">اجرای بازی</string>
     <string name="ps1_pause">مکث</string>
     <string name="ps1_resume">ادامه</string>
     <string name="ps1_cancel">لغو</string>
     <string name="ps1_settings">تنظیمات</string>
+    <string name="ps1_close">بستن</string>
     <string name="ps1_status_ready">همه چیز آماده است. بازی را اجرا کنید.</string>
     <string name="ps1_status_need_data">برای اجرای بازی، دیتا و بایوس را دریافت کنید.</string>
-    <string name="ps1_status_downloading_obb">در حال دریافت دیتای بازی…</string>
-    <string name="ps1_status_downloading_bios">در حال دریافت بایوس DuckStation…</string>
+    <string name="ps1_status_downloading_obb">در حال دریافت بستهٔ بازی…</string>
+    <string name="ps1_status_downloading_bios">در حال دریافت بستهٔ بایوس…</string>
     <string name="ps1_status_extracting">در حال آمادهسازی بازی…</string>
     <string name="ps1_status_importing_bios">در حال نصب بایوس…</string>
     <string name="ps1_download_paused">دانلود متوقف شد.</string>
@@ -18,18 +28,94 @@
     <string name="ps1_download_retry">تلاش مجدد %d</string>
     <string name="ps1_download_done">دریافت دیتا تمام شد.</string>
     <string name="ps1_error_prefix">خطا: </string>
-    <string name="ps1_detail_format">%1$s / %2$s  •  %3$s/s</string>
+    <string name="ps1_detail_format">%1$s از %2$s  •  %3$s در ثانیه</string>
     <string name="ps1_detail_unknown">در حال محاسبه…</string>
     <string name="ps1_cover_description">کاور بازی</string>
-    <string name="ps1_download_dialog_title">جزئیات دریافت دیتا</string>
+    <string name="ps1_download_dialog_title">دریافت دیتا</string>
     <string name="ps1_dlg_phase_unknown">مرحله: نامشخص</string>
     <string name="ps1_dlg_phase_format">مرحله: %1$s</string>
     <string name="ps1_dlg_file_unknown">فایل: نامشخص</string>
     <string name="ps1_dlg_file_format">فایل: %1$s</string>
-    <string name="ps1_dlg_phase_obb">دیتای بازی (OBB)</string>
-    <string name="ps1_dlg_phase_bios">بایوس DuckStation</string>
+    <string name="ps1_dlg_phase_obb">فایل دیتای بازی</string>
+    <string name="ps1_dlg_phase_bios">بستهٔ بایوس</string>
     <string name="ps1_dlg_phase_import">نصب بایوس</string>
     <string name="ps1_dlg_phase_extract">آمادهسازی بازی</string>
     <string name="ps1_dlg_phase_done">اتمام</string>
     <string name="ps1_dlg_close">بستن</string>
+    <string name="ps1_dlg_percent">٪۰</string>
+    <string name="ps1_dlg_status_idle">در انتظار</string>
+    <string name="ps1_dlg_row_game">فایل دیتای بازی</string>
+    <string name="ps1_dlg_row_bios">بستهٔ بایوس</string>
+    <string name="ps1_dlg_waiting">در انتظار</string>
+
+    <!-- منو -->
+    <string name="ps1_menu">منو</string>
+    <string name="ps1_store">فروشگاه</string>
+    <string name="ps1_store_sub">بازیهای آمادهٔ پلیاستیشن</string>
+    <string name="ps1_request">درخواست فارسی سازی بازی دلخواه</string>
+    <string name="ps1_request_short">درخواست فارسی سازی</string>
+    <string name="ps1_request_sub">برای ما بازی مورد نظرتان را بفرستید</string>
+    <string name="ps1_contact">ارتباط با ما</string>
+    <string name="ps1_contact_sub">پشتیبانی و پیشنهادها</string>
+    <string name="ps1_site">سایت farsipsx</string>
+    <string name="ps1_site_sub">همه بازیها در یکجا</string>
+    <string name="ps1_exit">خروج از برنامه</string>
+    <string name="ps1_exit_sub">پیش از رفتن، نظرتان را بگویید</string>
+    <string name="ps1_suggested">بازیهای پیشنهادی</string>
+
+    <!-- جزئیات بازی -->
+    <string name="ps1_detail_platform">پلتفرم: پلیاستیشن</string>
+    <string name="ps1_detail_disc">دیسک ۱ از ۲</string>
+    <string name="ps1_detail_year">سال ۱۹۹۸</string>
+    <string name="ps1_detail_translated">ترجمه: فارسی</string>
+    <string name="ps1_detail_desc">زنوگیرز داستان سفری است به دنیایی به نام لده اینفینیتی، جایی که فاجعههای ناشناخته و رازهای باستانی در هم تنیدهاند. داستان با فی، پسر جوانی از روستای کورالیان آغاز میشود که به همراه دوستانش وارد ماجرایی میشود که سرنوشت جهان را رقم میزند.&#10;&#10;این بازی با نبردهای نوبتی عمیق، سیستم رشد شخصیت و روباتهای غولپیکر «گییر» تجربهای متفاوت از نقشآفرینیهای کلاسیک ارائه میدهد. موسیقی و داستان آن از مهمترین ویژگیهای این اثر به شمار میروند.</string>
+    <string name="ps1_bazaar">دانلود از کافه بازار</string>
+
+    <!-- درخواست فارسیسازی -->
+    <string name="ps1_req_lead">بازی مورد نظرتان را معرفی کنید. اگر فایلی (مانند متن ترجمه یا عکس) لازم است، آنرا هم پیوست کنید.</string>
+    <string name="ps1_req_name">نام بازی</string>
+    <string name="ps1_req_name_hint">مثلاً کرونو کراس</string>
+    <string name="ps1_req_desc">توضیح (اختیاری)</string>
+    <string name="ps1_req_desc_hint">توضیحاتی دربارهٔ بازی یا ترجمهٔ مورد نظر…</string>
+    <string name="ps1_req_file">فایل (اختیاری)</string>
+    <string name="ps1_req_file_hint">برای پیوست فایل کلیک کنید</string>
+    <string name="ps1_req_submit">ارسال درخواست</string>
+    <string name="ps1_req_error">لطفاً نام بازی را وارد کنید.</string>
+    <string name="ps1_req_ok">درخواست شما ثبت شد. بزودی نتیجه را اطلاع میدهیم.</string>
+
+    <!-- ارتباط -->
+    <string name="ps1_contact_lead">هر سؤال، پیشنهاد یا مشکلی داشتید، از یکی از راههای زیر اقدام کنید.</string>
+    <string name="ps1_telegram">تلگرام</string>
+    <string name="ps1_telegram_sub">پیام سریع و مستقیم</string>
+    <string name="ps1_bale">بله</string>
+    <string name="ps1_bale_sub">ارتباط آنلاین با پشتیبانی</string>
+    <string name="ps1_ticket">ارسال تیکت</string>
+    <string name="ps1_ticket_sub">ثبت پیام و پیگیری آن</string>
+    <string name="ps1_ticket_title">عنوان پیام</string>
+    <string name="ps1_ticket_title_hint">موضوع پیام</string>
+    <string name="ps1_ticket_body">متن پیام</string>
+    <string name="ps1_ticket_body_hint">پیام خود را بنویسید…</string>
+    <string name="ps1_ticket_submit">ارسال تیکت</string>
+    <string name="ps1_ticket_error">لطفاً عنوان و متن پیام را وارد کنید.</string>
+    <string name="ps1_ticket_ok">تیکت شما ثبت شد. بزودی پاسخ میدهیم.</string>
+    <string name="ps1_toast_telegram">پیام تلگرام در نسخهٔ نهایی به این بخش متصل میشود.</string>
+    <string name="ps1_toast_bale">گفتگوی بله در نسخهٔ نهایی به این بخش متصل میشود.</string>
+
+    <!-- تنظیمات گرافیک -->
+    <string name="ps1_graphics">گرافیک بازی</string>
+    <string name="ps1_gfx_1">بهینه</string>
+    <string name="ps1_gfx_2">معمولی</string>
+    <string name="ps1_gfx_3">بالا</string>
+    <string name="ps1_gfx_4">خیلی بالا</string>
+
+    <!-- امتیاز و خروج -->
+    <string name="ps1_rate_title">نظرتان برای ما مهم است</string>
+    <string name="ps1_rate_text">اگر از تجربهٔ بازی راضی بودید، لطفاً یک ستاره انتخاب کنید و سپس در کافه بازار ثبت نمایید. حمایت شما ما را قویتر میکند.</string>
+    <string name="ps1_rate_hint">ستارهای که میخواهید بدهید را انتخاب کنید</string>
+    <string name="ps1_rate_selected">شما %1$s ستاره انتخاب کردید — ممنونیم!</string>
+    <string name="ps1_rate_go">ثبت امتیاز در کافه بازار</string>
+    <string name="ps1_rate_later">بعداً، ممنون</string>
+    <string name="ps1_exit_title">از وقتی که گذاشتید ممنونیم</string>
+    <string name="ps1_exit_text">تا دیداری دیگر... اگر نظرتان عوض شد، دوباره از منو اقدام کنید.</string>
+    <string name="ps1_exit_back">بازگشت به لانچر</string>
 </resources>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>پیشنهادهای طراحی Ps1App</title>
+<style>
+  :root{--ink:#e8edf7;--muted:#94a3bd}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;padding:28px;background:radial-gradient(900px 500px at 80% -10%,#1c2540,#0b0f19 60%);
+    color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif}
+  h1{font-size:24px;margin:0 0 6px}
+  .lead{color:var(--muted);font-size:14px;line-height:1.9;margin:0 0 22px;max-width:1000px}
+  #choice{color:#22d3ee;font-weight:700}
+  .row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+  .theme{width:300px;cursor:pointer;border-radius:22px;padding:10px;background:rgba(20,27,43,.72);
+    border:2px solid transparent;transition:.28s;user-select:none}
+  .theme:hover{transform:translateY(-4px);border-color:#2a3550}
+  .theme.selected{border-color:#22d3ee;box-shadow:0 0 0 4px rgba(34,211,238,.15),0 16px 38px rgba(0,0,0,.45)}
+  .phone{position:relative;width:100%;aspect-ratio:9/19;border-radius:20px;overflow:hidden;background:#0b0f19;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:12px;padding:16px;z-index:4}
+  .cover{width:70%;border-radius:16px;display:block;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+  .gname{font-size:15px;font-weight:800;text-align:center;text-shadow:0 2px 8px #000}
+  .btns{display:flex;width:100%;gap:8px}
+  .btn{flex:1;text-align:center;padding:9px 4px;border-radius:999px;font-size:12px;font-weight:800;color:#fff;
+    box-shadow:0 6px 16px rgba(0,0,0,.28);transition:.25s;white-space:nowrap}
+  .btn.play{background:linear-gradient(135deg,#34d399,#22d3ee)}
+  .btn.dl{background:linear-gradient(135deg,#6d5efc,#22d3ee)}
+  .btn.set{width:58%;flex:none;padding:7px 4px;border-radius:999px;font-size:11px;font-weight:600;
+    background:rgba(13,20,36,.55);border:1.5px solid rgba(167,139,250,.7);color:#e8edf7;
+    backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+  .label{display:flex;justify-content:space-between;align-items:center;margin:10px 4px 2px;font-size:14px;font-weight:700}
+  .label span:last-child{font-size:10px;color:var(--muted);font-weight:400}
+
+  /* 1 Aurora */
+  .aurora{background:radial-gradient(circle at 80% 5%,#1c2540,#0b0f19 62%)}
+  .aurora .blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.66;z-index:1}
+  .aurora .b1{width:220px;height:220px;background:#6d5efc;top:-40px;right:-60px;animation:d1 11s ease-in-out infinite alternate}
+  .aurora .b2{width:200px;height:200px;background:#22d3ee;bottom:40px;left:-70px;animation:d2 13s ease-in-out infinite alternate}
+  .aurora .b3{width:170px;height:170px;background:#34d399;bottom:150px;right:-50px;animation:d3 9s ease-in-out infinite alternate}
+  .aurora .cover{animation:glowA 4s ease-in-out infinite alternate}
+  @keyframes d1{to{transform:translate(40px,70px) scale(1.2)}}
+  @keyframes d2{to{transform:translate(-30px,-90px) scale(1.15)}}
+  @keyframes d3{to{transform:translate(30px,-60px) scale(1.25)}}
+  @keyframes glowA{from{box-shadow:0 10px 30px rgba(0,0,0,.55),0 0 0 3px rgba(109,94,252,.45)}
+    to{box-shadow:0 10px 30px rgba(0,0,0,.55),0 0 0 3px rgba(34,211,238,.75),0 0 26px rgba(34,211,238,.3)}}
+
+  /* 2 Ember */
+  .ember{background:radial-gradient(circle at 70% 10%,#33202a,#120d16 62%)}
+  .ember .blob{position:absolute;border-radius:50%;filter:blur(48px);opacity:.6;z-index:1}
+  .ember .b1{width:220px;height:220px;background:#fb923c;top:-50px;right:-50px;animation:d1 10s ease-in-out infinite alternate}
+  .ember .b2{width:200px;height:200px;background:#fb7185;bottom:30px;left:-70px;animation:d2 12s ease-in-out infinite alternate}
+  .ember .b3{width:150px;height:150px;background:#fbbf24;top:40%;right:-40px;animation:d3 8s ease-in-out infinite alternate}
+  .ember .spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#fbbf24;box-shadow:0 0 10px #fb923c;
+    z-index:2;animation:rise 6s linear infinite;opacity:.8}
+  .ember .s1{left:18%;bottom:-10px}.ember .s2{left:42%;bottom:-10px;animation-delay:1.6s}
+  .ember .s3{left:68%;bottom:-10px;animation-delay:3.1s}.ember .s4{left:86%;bottom:-10px;animation-delay:4.4s}
+  @keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:.9}100%{transform:translateY(-620px) scale(1.3);opacity:0}}
+  .ember .btn.play{background:linear-gradient(135deg,#fbbf24,#fb7185)}
+  .ember .btn.dl{background:linear-gradient(135deg,#fb7185,#fb923c)}
+  .ember .btn.set{border-color:#fb923c}
+
+  /* 3 Neon grid */
+  .neon{background:#080c18}
+  .neon .grid{position:absolute;inset:-40% -60%;z-index:1;opacity:.5;
+    background-image:linear-gradient(rgba(34,211,238,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(109,94,252,.2) 1px,transparent 1px);
+    background-size:38px 38px;transform:perspective(500px) rotateX(58deg);animation:gridmove 7s linear infinite}
+  .neon .halo{position:absolute;inset:0;z-index:2;background:radial-gradient(circle at 50% 42%,rgba(34,211,238,.16),transparent 55%)}
+  .neon .scan{position:absolute;left:0;right:0;height:70px;top:-70px;z-index:2;
+    background:linear-gradient(180deg,transparent,rgba(34,211,238,.14),transparent);animation:scan 5s linear infinite}
+  @keyframes gridmove{to{background-position:0 38px,38px 0}}
+  @keyframes scan{to{transform:translateY(820px)}}
+  .neon .btn.play{background:linear-gradient(135deg,#22d3ee,#60a5fa)}
+  .neon .btn.dl{background:linear-gradient(135deg,#a78bfa,#22d3ee)}
+
+  /* 4 Glass minimal */
+  .glass{background:linear-gradient(160deg,#101a2e,#0b0f19 60%)}
+  .glass .orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;z-index:1}
+  .glass .o1{width:240px;height:240px;background:#60a5fa;top:-60px;left:-50px;animation:d2 14s ease-in-out infinite alternate}
+  .glass .o2{width:200px;height:200px;background:#a78bfa;bottom:60px;right:-60px;animation:d1 12s ease-in-out infinite alternate}
+  .glass .panel{position:absolute;inset:14% 8%;z-index:2;border-radius:26px;
+    background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+  .glass .btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff}
+  .glass .btn.play{background:linear-gradient(135deg,rgba(52,211,153,.85),rgba(34,211,238,.85));border-color:transparent}
+  .glass .btn.dl{background:rgba(109,94,252,.35);border-color:rgba(167,139,250,.6)}
+
+  /* 5 Orbit */
+  .orbit{background:radial-gradient(circle at 50% 45%,#16224a,#080b16 68%)}
+  .orbit .ring{position:absolute;left:50%;top:42%;width:250px;height:250px;margin:-125px;border-radius:50%;
+    border:1px solid rgba(34,211,238,.28);z-index:1;animation:spin 16s linear infinite}
+  .orbit .ring:nth-child(2){width:340px;height:340px;margin:-170px;border-color:rgba(109,94,252,.2);
+    animation:spin 24s linear infinite reverse}
+  .orbit .ring:nth-child(3){width:430px;height:430px;margin:-215px;border-color:rgba(52,211,153,.14);
+    animation:spin 32s linear infinite}
+  .orbit .ring::after{content:"";position:absolute;top:14px;left:50%;width:7px;height:7px;border-radius:50%;
+    background:#22d3ee;box-shadow:0 0 14px #22d3ee}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .orbit .btn.play{background:linear-gradient(135deg,#34d399,#22d3ee)}
+  .orbit .btn.dl{background:linear-gradient(135deg,#6d5efc,#a78bfa)}
+</style>
+</head>
+<body>
+  <h1>پیشنهادهای طراحی Ps1App</h1>
+  <p class="lead">روی هر نمونه کلیک کنید تا انتخاب شود. همهٔ نمونهها متحرکند، دکمهها باریکتر و گردتر شدهاند و دکمهٔ تنظیمات کوچک و میانچین است. فعلاً هیچ کدی تغییر نکردهام. انتخاب فعلی: <span id="choice">هیچکدام</span></p>
+  <div class="row">
+
+    <div class="theme" data-name="شفق شمالی (Aurora)">
+      <div class="phone aurora">
+        <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+        <div class="screen"><img class="cover" src="cover.jpg" alt="cover"><div class="gname">Xenogears (Disc 1)</div>
+          <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+          <div class="btn set">تنظیمات</div></div>
+      </div>
+      <div class="label"><span>۱. شفق شمالی</span><span>بنفش / فیروزهای / سبز</span></div>
+    </div>
+
+    <div class="theme" data-name="غروب آتشفشانی (Ember)">
+      <div class="phone ember">
+        <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+        <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div><div class="spark s4"></div>
+        <div class="screen"><img class="cover" src="cover.jpg" alt="cover"><div class="gname">Xenogears (Disc 1)</div>
+          <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+          <div class="btn set">تنظیمات</div></div>
+      </div>
+      <div class="label"><span>۲. غروب آتشفشانی</span><span>نارنجی / صورتی / طلایی</span></div>
+    </div>
+
+    <div class="theme" data-name="شبکه نئون (Neon Grid)">
+      <div class="phone neon">
+        <div class="grid"></div><div class="halo"></div><div class="scan"></div>
+        <div class="screen"><img class="cover" src="cover.jpg" alt="cover"><div class="gname">Xenogears (Disc 1)</div>
+          <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+          <div class="btn set">تنظیمات</div></div>
+      </div>
+      <div class="label"><span>۳. شبکه نئون</span><span>تکنولوژیک و پویا</span></div>
+    </div>
+
+    <div class="theme" data-name="شیشهای مینیمال (Glass)">
+      <div class="phone glass">
+        <div class="orb o1"></div><div class="orb o2"></div><div class="panel"></div>
+        <div class="screen"><img class="cover" src="cover.jpg" alt="cover"><div class="gname">Xenogears (Disc 1)</div>
+          <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+          <div class="btn set">تنظیمات</div></div>
+      </div>
+      <div class="label"><span>۴. شیشهای مینیمال</span><span>آبی ملایم و شفاف</span></div>
+    </div>
+
+    <div class="theme" data-name="مدارها (Orbit)">
+      <div class="phone orbit">
+        <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+        <div class="screen"><img class="cover" src="cover.jpg" alt="cover"><div class="gname">Xenogears (Disc 1)</div>
+          <div class="btns"><div class="btn play">اجرای بازی</div><div class="btn dl">دریافت دیتا</div></div>
+          <div class="btn set">تنظیمات</div></div>
+      </div>
+      <div class="label"><span>۵. مدارها</span><span>حلقههای چرخان دور کاور</span></div>
+    </div>
+
+  </div>
+<script>
+  const out=document.getElementById('choice');
+  document.querySelectorAll('.theme').forEach(el=>el.addEventListener('click',()=>{
+    document.querySelectorAll('.theme').forEach(x=>x.classList.remove('selected'));
+    el.classList.add('selected');out.textContent=el.dataset.name;
+  }));
+</script>
+</body>
+</html>

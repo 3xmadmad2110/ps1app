@@ -28,7 +28,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
         versionCode gameVersionCode
-        versionName "1.0"
+        versionName "2"
 
         manifestPlaceholders = [appName: gameName]
         resValue("string", "ps1_data_url", dataDownloadUrl)

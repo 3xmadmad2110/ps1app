@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>farsipsx | بازیهای پلیاستیشن به زبان فارسی</title>
+<style>
+  :root{
+    --bg:#0b0f19;--panel:#141b2b;--panel2:#1b2437;--line:#2a3550;
+    --purple:#6d5efc;--cyan:#22d3ee;--green:#34d399;--gold:#fbbf24;
+    --ember:#fb923c;--rose:#fb7185;--ink:#fff5ec;--muted:#94a3bd;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;line-height:1.8;overflow-x:hidden}
+  a{text-decoration:none;color:inherit}
+  button,input,textarea{font-family:inherit}
+  .wrap{width:min(1180px,92vw);margin:auto}
+
+  /* نوار بالا */
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);
+    background:rgba(11,15,25,.82);border-bottom:1px solid rgba(251,191,36,.18)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:11px 0}
+  .logo{font-size:23px;font-weight:900;letter-spacing:.6px;direction:ltr;color:var(--gold);
+    text-shadow:0 0 8px rgba(251,191,36,.7),0 0 22px rgba(251,146,60,.4)}
+  .nav{display:flex;gap:22px;align-items:center;font-size:13px;font-weight:600}
+  .nav a{color:#d8c4cf;transition:.25s}
+  .nav a:hover{color:var(--gold)}
+  .cta-top{padding:9px 18px;border-radius:999px;font-size:12px;font-weight:800;
+    background:linear-gradient(135deg,var(--gold),var(--rose));color:#2a1206;white-space:nowrap;
+    box-shadow:0 6px 18px rgba(251,113,133,.3);transition:.25s}
+  .cta-top:hover{transform:translateY(-2px)}
+
+  /* هیرو */
+  .hero{position:relative;padding:80px 0 70px;overflow:hidden;
+    background:radial-gradient(900px 520px at 78% -10%,#4a2430,#1a1120 55%,#0b0f19 85%)}
+  .hero .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;pointer-events:none}
+  .o1{width:330px;height:330px;top:-80px;right:-60px;background:var(--ember);animation:float 9s ease-in-out infinite alternate}
+  .o2{width:280px;height:280px;bottom:-70px;left:-50px;background:var(--purple);animation:float 11s ease-in-out infinite alternate-reverse}
+  @keyframes float{to{transform:translate(40px,45px) scale(1.15)}}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px;position:relative;z-index:1}
+  .eyebrow{display:inline-block;padding:6px 13px;border-radius:999px;font-size:11px;color:var(--cyan);
+    background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);margin-bottom:16px}
+  .hero h1{font-size:clamp(30px,4.2vw,52px);line-height:1.35;margin:0 0 14px}
+  .hero h1 span{color:var(--gold);text-shadow:0 0 20px rgba(251,191,36,.45)}
+  .hero p{color:#d8c4cf;font-size:15px;max-width:560px;margin:0 0 26px}
+  .hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+  .btn-big{padding:13px 26px;border-radius:999px;font-size:14px;font-weight:800;transition:.25s}
+  .btn-gold{background:linear-gradient(135deg,var(--gold),var(--ember));color:#2a1206;
+    box-shadow:0 10px 26px rgba(251,146,60,.35)}
+  .btn-ghost{border:1px solid rgba(167,139,250,.6);color:#e8edf7;background:rgba(109,94,252,.14)}
+  .btn-big:hover{transform:translateY(-3px)}
+  .hero-art{display:flex;justify-content:center;position:relative}
+  .hero-art img{width:min(340px,80%);border-radius:24px;
+    box-shadow:0 24px 60px rgba(0,0,0,.65),0 0 0 2px rgba(251,191,36,.35),0 0 50px rgba(251,146,60,.28);
+    animation:heroFloat 5s ease-in-out infinite alternate}
+  @keyframes heroFloat{to{transform:translateY(-14px) rotate(1.5deg)}}
+
+  /* آمار */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0;position:relative;z-index:2}
+  .stat{padding:18px;text-align:center;border-radius:18px;background:rgba(20,27,43,.75);
+    border:1px solid var(--line);backdrop-filter:blur(10px)}
+  .stat b{display:block;font-size:25px;color:var(--gold)}
+  .stat span{font-size:12px;color:var(--muted)}
+
+  /* بازیها */
+  section.blk{padding:56px 0}
+  .sec-head{text-align:center;margin-bottom:28px}
+  .sec-head h2{margin:0 0 8px;font-size:27px;color:var(--gold)}
+  .sec-head p{margin:0;color:var(--muted);font-size:14px}
+  .tools{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{padding:7px 15px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;
+    color:#e8edf7;background:rgba(27,36,55,.8);border:1px solid var(--line);transition:.25s}
+  .chip:hover{border-color:var(--gold)}
+  .chip.on{color:#fff;background:linear-gradient(135deg,var(--purple),var(--cyan));border-color:transparent}
+  .search{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;
+    background:rgba(20,27,43,.85);border:1px solid var(--line)}
+  .search input{background:none;border:0;outline:none;color:var(--ink);font-size:13px;width:190px;direction:rtl}
+  .search input::placeholder{color:#94a3bd}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:18px}
+  .card{border-radius:20px;overflow:hidden;background:linear-gradient(180deg,rgba(20,27,43,.9),rgba(14,19,32,.9));
+    border:1px solid var(--line);transition:.3s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);border-color:var(--gold);
+    box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 24px rgba(251,146,60,.16)}
+  .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+  .card-body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card h3{margin:0;font-size:16px;color:var(--ink)}
+  .card .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .card .tags span{font-size:10px;padding:4px 9px;border-radius:999px;color:#e8edf7;
+    background:rgba(20,27,43,.9);border:1px solid var(--line)}
+  .card .tags span:first-child{color:var(--cyan);border-color:rgba(34,211,238,.4)}
+  .badge-fa{align-self:flex-start;font-size:10px;font-weight:800;color:var(--green);
+    padding:3px 9px;border-radius:999px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4)}
+  .card button{margin-top:auto;padding:9px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:800;
+    color:#fff;background:linear-gradient(135deg,var(--purple),var(--cyan));border:0;transition:.25s}
+  .card button:hover{filter:brightness(1.15)}
+
+  /* درخواست و ارتباط */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .box{padding:26px;border-radius:22px;background:rgba(20,27,43,.72);border:1px solid var(--line)}
+  .box h3{margin:0 0 6px;color:var(--gold);font-size:20px}
+  .box>p{margin:0 0 18px;color:var(--muted);font-size:13px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;color:var(--gold);font-weight:700;margin-bottom:5px}
+  .field input,.field textarea{width:100%;padding:11px 12px;border-radius:12px;resize:none;
+    background:#0d1424;border:1px solid var(--line);color:var(--ink);outline:none;font-size:13px}
+  .field input:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.14)}
+  .submit{width:100%;padding:12px;border:0;border-radius:999px;cursor:pointer;font-weight:800;font-size:14px;
+    color:#2a1206;background:linear-gradient(135deg,var(--gold),var(--rose))}
+  .ok{display:none;margin-top:12px;text-align:center;font-size:12px;color:var(--green)}
+  .ok.on{display:block}
+  .msg{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;margin-bottom:10px;
+    background:rgba(27,36,55,.7);border:1px solid var(--line);transition:.25s}
+  .msg:hover{transform:translateX(4px);border-color:var(--gold)}
+  .msg img{width:38px;height:38px;object-fit:contain}
+  .msg b{display:block;font-size:13px}
+  .msg small{display:block;font-size:11px;color:var(--muted)}
+
+  /* امتیازدهی */
+  .rate-card{padding:34px 24px;border-radius:26px;text-align:center;
+    background:radial-gradient(circle at 50% 0,rgba(251,191,36,.13),transparent 62%),rgba(20,27,43,.8);
+    border:1px solid rgba(251,191,36,.35)}
+  .rate-card h2{margin:0 0 8px;font-size:26px;color:var(--gold)}
+  .rate-card p{margin:0 0 16px;font-size:14px;color:var(--muted)}
+  .rate-card .stars{display:flex;justify-content:center;gap:8px;direction:ltr;margin-bottom:8px}
+  .rate-card .stars span{cursor:pointer;font-size:38px;line-height:1;color:rgba(148,163,189,.4);transition:.2s}
+  .rate-card .stars span:hover{transform:scale(1.15)}
+  .rate-card .stars span.lit{color:var(--gold);filter:drop-shadow(0 0 10px rgba(251,191,36,.8))}
+  .rate-card .hint{min-height:20px;font-size:12px;color:var(--muted);margin-bottom:14px}
+  .rate-card .bazaar{max-width:290px;margin:auto;opacity:.45;pointer-events:none;transition:.25s}
+  .rate-card .bazaar.ready{opacity:1;pointer-events:auto}
+
+  /* پاورقی */
+  footer{border-top:1px solid rgba(251,191,36,.18);padding:34px 0 26px;background:rgba(8,11,20,.7)}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .foot .logo{font-size:20px}
+  .foot p{margin:5px 0 0;font-size:11px;color:var(--muted)}
+  .foot-links{display:flex;gap:18px;font-size:12px;color:var(--muted)}
+  .foot-links a:hover{color:var(--gold)}
+
+  /* پنجره جزئیات */
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:rgba(5,7,13,.82);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:.3s}
+  .modal.on{opacity:1;pointer-events:auto}
+  .modal-box{width:min(560px,100%);max-height:90vh;overflow-y:auto;position:relative;padding:24px;
+    border-radius:24px;background:linear-gradient(180deg,#1a2337,#0d1322);border:1px solid rgba(251,191,36,.4);
+    box-shadow:0 30px 70px rgba(0,0,0,.7);transform:translateY(20px) scale(.96);transition:.3s}
+  .modal.on .modal-box{transform:none}
+  .modal-box .x{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:10px;cursor:pointer;
+    background:rgba(109,94,252,.2);border:1px solid rgba(167,139,250,.5);color:#fff;font-size:19px}
+  .modal-box img{width:100%;border-radius:16px;display:block}
+  .modal-box h3{margin:16px 0 8px;color:var(--gold);font-size:22px}
+  .modal-box .tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+  .modal-box .tags span{font-size:11px;padding:5px 10px;border-radius:999px;color:#e8edf7;
+    background:rgba(20,27,43,.9);border:1px solid var(--line)}
+  .modal-box p{color:#d8c4cf;font-size:13px;line-height:2}
+  .bazaar{display:block;text-align:center;margin-top:18px;padding:13px;border-radius:999px;
+    font-weight:800;font-size:14px;color:#06291a;background:linear-gradient(135deg,#34d399,#22c55e);
+    box-shadow:0 8px 22px rgba(34,197,94,.32)}
+
+  @media(max-width:860px){
+    .hero-grid,.duo{grid-template-columns:1fr}
+    .nav{display:none}
+    .stats{grid-template-columns:1fr 1fr}
+    .hero-art img{width:min(280px,70%)}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="logo">farsipsx</div>
+    <nav class="nav">
+      <a href="#games">بازیها</a><a href="#request">درخواست فارسی سازی</a><a href="#contact">ارتباط با ما</a>
+    </nav>
+    <a class="cta-top" href="#games">مرور بازیها</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">تنها جای بازیهای فارسی پلیاستیشن</span>
+      <h1>لذت بازی <span>به زبان فارسی</span></h1>
+      <p>مجموعهای از بهترین بازیهای کلاسیک پلیاستیشن همراه با فارسی سازی کامل، دانلود داخلی و اجرای آسان روی گوشی اندروید.</p>
+      <div class="hero-btns">
+        <a class="btn-big btn-gold" href="#games">همه بازیها</a>
+        <a class="btn-big btn-ghost" href="#request">درخواست بازی دلخواه</a>
+      </div>
+    </div>
+    <div class="hero-art"><img src="cover.jpg" alt="کاور بازی زنوگیرز"></div>
+  </div>
+</section>
+
+<div class="wrap stats">
+  <div class="stat"><b>۱۲</b><span>بازی فارسی سازی شده</span></div>
+  <div class="stat"><b>۱۰۰٪</b><span>ترجمهٔ فارسی</span></div>
+  <div class="stat"><b>همیشه</b><span>پشتیبانی و بهروزرسانی</span></div>
+  <div class="stat"><b>آسان</b><span>نصب و اجرا</span></div>
+</div>
+
+<section class="blk" id="games">
+  <div class="wrap">
+    <div class="sec-head"><h2>همه بازیها</h2><p>بازی مورد نظرتان را پیدا کنید و جزئیات آن را ببینید</p></div>
+    <div class="tools">
+      <div class="chips" id="chips"></div>
+      <label class="search">🔎 <input id="search" placeholder="جستجوی بازی…"></label>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="blk">
+  <div class="wrap"><div class="rate-card">
+    <h2>نظرتان برای ما مهم است ⭐</h2>
+    <p>بازی را دوست داشتید؟ ستارهٔ مورد نظرتان را انتخاب کنید، سپس در کافه بازار ثبت نمایید.</p>
+    <div class="stars" id="site-stars">
+      <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+    </div>
+    <div class="hint" id="site-rate-hint">ستارهای را که میخواهید بدهید انتخاب کنید</div>
+    <a class="bazaar" id="site-rate-go" href="https://cafebazaar.ir/" target="_blank" rel="noopener">ثبت امتیاز در کافه بازار</a>
+  </div></div>
+</section>
+
+<section class="blk" id="request">
+  <div class="wrap duo">
+    <div class="box">
+      <h3>درخواست فارسی سازی</h3>
+      <p>بازی دلخواهتان را معرفی کنید؛ اگر فایلی هم لازم است پیوست کنید.</p>
+      <form id="req-form">
+        <div class="field"><label>نام بازی</label><input id="req-name" placeholder="مثلاً کرونو کراس"></div>
+        <div class="field"><label>توضیح (اختیاری)</label><textarea id="req-desc" rows="3" placeholder="توضیحاتی دربارهٔ بازی…"></textarea></div>
+        <button class="submit" type="submit">ارسال درخواست</button>
+        <div class="ok" id="req-ok">✅ درخواست شما ثبت شد. بزودی نتیجه را اطلاع میدهیم.</div>
+      </form>
+    </div>
+    <div class="box" id="contact">
+      <h3>ارتباط با ما</h3>
+      <p>هر سؤال، پیشنهاد یا مشکلی داشتید از یکی از راههای زیر اقدام کنید.</p>
+      <div class="msg"><img src="telegram.svg" alt="تلگرام"><span><b>تلگرام</b><small>پیام سریع و مستقیم</small></span></div>
+      <div class="msg"><img src="bale.svg" alt="بله"><span><b>بله</b><small>ارتباط آنلاین با پشتیبانی</small></span></div>
+      <div class="msg"><span style="font-size:26px">🎫</span><span><b>ارسال تیکت</b><small>ثبت پیام و پیگیری آن</small></span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div><div class="logo">farsipsx</div><p>لذت بازی به زبان فارسی · تمامی حقوق محفوظ است</p></div>
+    <div class="foot-links"><a href="#games">بازیها</a><a href="#request">درخواست فارسی سازی</a><a href="#contact">ارتباط با ما</a></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="x" id="modal-x">×</button>
+    <img id="m-img" src="cover.jpg" alt="">
+    <h3 id="m-title"></h3>
+    <div class="tags" id="m-tags"></div>
+    <p id="m-desc"></p>
+    <a class="bazaar" href="https://cafebazaar.ir/" target="_blank" rel="noopener">دانلود از کافه بازار</a>
+  </div>
+</div>
+
+<script>
+  const games=[
+    {n:'زنوگیرز (دیسک ۱)',g:'نقشآفرینی',y:'۱۹۹۸',h:0,d:'داستان حماسی فِی و اِلی در دنیایی پر از اسرار؛ یکی از بهترین بازیهای فارسی سازی شده ما.'},
+    {n:'اسپایدرمن',g:'اکشن',y:'۲۰۰۰',h:200,d:'ماجراجویی مرد عنکبوتی در شهر نیویورک؛ با قدرتهای ویژه و نبرد با دشمنان مختلف.'},
+    {n:'کراش باندیکوت',g:'پلتفرمر',y:'۱۹۹۶',h:85,d:'کراش باید جعبههای مرموز را جمع کند و دکتر کورتکس را شکست دهد.'},
+    {n:'تکن ۳',g:'مبارزهای',y:'۱۹۹۷',h:25,d:'مسابقات مبارزهٔ سهبعدی با شخصیتهای متنوع و سیستم ترکیب ضربات.'},
+    {n:'رزیدنت ایول ۳',g:'ترسناک',y:'۱۹۹۷',h:320,d:'جیل در شهر راکون با گسترش ویروس و دشمنان خطرناک روبهرو میشود.'},
+    {n:'متال گیر سالید',g:'مخفی کاری',y:'۱۹۹۸',h:150,d:'اسنیک مأموریت نفوذ به پایگاه دشمن و جلوگیری از سلاح هستهای را بر عهده دارد.'},
+    {n:'فاینال فانتزی ۷',g:'نقشآفرینی',y:'۱۹۹۷',h:270,d:'کلود و گروهش علیه شرکتی قدرتمند میجنگند تا سیاره را نجات دهند.'},
+    {n:'خدای جنگ',g:'اکشن',y:'۲۰۰۵',h:12,d:'کراتوس، جنگجوی اسپارتی، سفری پر از نبرد علیه خدایان المپ را آغاز میکند.'},
+    {n:'مستر شیف',g:'ماجراجویی',y:'۲۰۰۱',h:45,d:'سفری در دنیای باستانی با معماها و آثار باستانی فراموششده.'},
+    {n:'گران توریسمو ۲',g:'مسابقهای',y:'۱۹۹۹',h:190,d:'مسابقات اتومبیلرانی با خودروها و مسیرهای متنوع در سراسر جهان.'},
+    {n:'تومب ریدر',g:'ماجراجویی',y:'۱۹۹۶',h:110,d:'لارا کرافت در جستجوی آثار باستانی، معماها و خطرات زیادی را پشت سر میگذارد.'},
+    {n:'رزیدنت ایول ۲',g:'ترسناک',y:'۱۹۹۸',h:350,d:'لئون و کلیر در شهر راکون گرفتار فاجعهای میشوند که باید از آن جان سالم به در برند.'}
+  ];
+  const grid=document.getElementById('grid');
+  const genres=['همه',...new Set(games.map(x=>x.g))];
+  const chips=document.getElementById('chips');
+  let active='همه';
+  genres.forEach(g=>{
+    const b=document.createElement('button');b.className='chip'+(g==='همه'?' on':'');b.textContent=g;
+    b.onclick=()=>{active=g;[...chips.children].forEach(c=>c.classList.toggle('on',c===b));render()};
+    chips.appendChild(b);
+  });
+  const search=document.getElementById('search');
+  search.oninput=render;
+  function render(){
+    const q=search.value.trim();
+    const list=games.filter(x=>(active==='همه'||x.g===active)&&x.n.includes(q));
+    grid.innerHTML=list.map((x,i)=>`<div class="card">
+      <img src="cover.jpg" alt="" style="filter:hue-rotate(${x.h}deg)">
+      <div class="card-body">
+        <span class="badge-fa">فارسی سازی شده</span>
+        <h3>${x.n}</h3>
+        <div class="tags"><span>${x.g}</span><span>سال ${x.y}</span><span>پلیاستیشن</span></div>
+        <button data-i="${games.indexOf(x)}">مشاهدهٔ جزئیات</button>
+      </div></div>`).join('');
+    grid.querySelectorAll('button').forEach(b=>b.onclick=()=>openGame(games[+b.dataset.i]));
+  }
+  render();
+  const modal=document.getElementById('modal');
+  function openGame(x){
+    document.getElementById('m-img').style.filter=`hue-rotate(${x.h}deg)`;
+    document.getElementById('m-title').textContent=x.n;
+    document.getElementById('m-tags').innerHTML=`<span>${x.g}</span><span>سال ${x.y}</span><span>پلتفرم: پلیاستیشن</span><span>ترجمه: فارسی</span>`;
+    document.getElementById('m-desc').textContent=x.d;
+    modal.classList.add('on');
+  }
+  document.getElementById('modal-x').onclick=()=>modal.classList.remove('on');
+  modal.onclick=e=>{if(e.target===modal)modal.classList.remove('on')};
+  const siteStars=[...document.querySelectorAll('#site-stars span')];
+  siteStars.forEach((s,i)=>s.onclick=()=>{
+    siteStars.forEach((x,j)=>x.classList.toggle('lit',j<=i));
+    document.getElementById('site-rate-hint').textContent=`شما ${s.dataset.v} ستاره انتخاب کردید — ممنونیم!`;
+    document.getElementById('site-rate-go').classList.add('ready');
+  });
+  document.getElementById('req-form').onsubmit=e=>{
+    e.preventDefault();
+    const n=document.getElementById('req-name');
+    if(!n.value.trim()){n.focus();return}
+    document.getElementById('req-ok').classList.add('on');
+    e.target.reset();
+  };
+</script>
+</body>
+</html>
