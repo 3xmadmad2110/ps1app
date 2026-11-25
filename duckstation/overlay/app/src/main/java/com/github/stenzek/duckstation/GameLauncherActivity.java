@@ -175,7 +175,6 @@ public class GameLauncherActivity extends AppCompatActivity {
         setupLauncherButtons();
         setupMenu();
         setupOverlays();
-        setupGraphics();
         setupRating();
         buildSuggestions();
         buildStore();
@@ -610,7 +609,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         Collections.shuffle(indices);
         for (int i = 0; i < 3 && i < indices.size(); i++) {
             final int index = indices.get(i);
-            View card = makeGameCard(index, dp(92));
+            View card = makeGameCard(index, (int) dp(92));
             suggestRow.addView(card);
         }
     }
@@ -618,13 +617,13 @@ public class GameLauncherActivity extends AppCompatActivity {
     private void buildStore() {
         for (int i = 1; i < gameNames.length; i++) {
             final int index = i;
-            View card = makeGameCard(index, dp(130));
+            View card = makeGameCard(index, (int) dp(130));
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams(
                     GridLayout.spec(i - 1, 1, 1f),
                     GridLayout.spec((i - 1) / 2));
             lp.width = 0;
             lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
-            lp.setMargins(0, 0, dp(11), dp(11));
+            lp.setMargins(0, 0, (int) dp(11), (int) dp(11));
             card.setLayoutParams(lp);
             storeGrid.addView(card);
         }
@@ -634,7 +633,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackgroundResource(R.drawable.ps1_row_card);
-        card.setPadding(dp(8), dp(8), dp(8), dp(8));
+        card.setPadding((int) dp(8), (int) dp(8), (int) dp(8), (int) dp(8));
         card.setClickable(true);
         card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -661,7 +660,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         label.setEllipsize(android.text.TextUtils.TruncateAt.END);
         LinearLayout.LayoutParams labelLp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        labelLp.topMargin = dp(7);
+        labelLp.topMargin = (int) dp(7);
         label.setLayoutParams(labelLp);
 
         card.addView(image);
@@ -987,7 +986,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         if (downloadEnabled) {
             playLp = new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-            playLp.setMargins(0, 0, dp(10), 0);
+            playLp.setMargins(0, 0, (int) dp(10), 0);
         } else {
             playLp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -1353,10 +1352,11 @@ public class GameLauncherActivity extends AppCompatActivity {
                 for (int i = 0; i < lefts.length; i++) {
                     View view = new View(GameLauncherActivity.this);
                     view.setBackgroundResource(R.drawable.ps1_spark);
-                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(dp(5), dp(5));
+                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                            (int) dp(5), (int) dp(5));
                     lp.gravity = Gravity.TOP | Gravity.START;
                     lp.leftMargin = (int) (width * lefts[i]);
-                    lp.topMargin = Math.max(0, height - dp(12));
+                    lp.topMargin = (int) Math.max(0, height - dp(12));
                     view.setLayoutParams(lp);
                     boolean extra = i >= 5;
                     if (extra)
