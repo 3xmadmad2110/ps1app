@@ -637,7 +637,7 @@ public class GameLauncherActivity extends AppCompatActivity {
         card.setBackgroundResource(R.drawable.ps1_row_card);
         card.setPadding((int) dp(8), (int) dp(8), (int) dp(8), (int) dp(8));
         card.setLayoutParams(new LinearLayout.LayoutParams(
-                (int) dp(width + 16), LinearLayout.LayoutParams.WRAP_CONTENT));
+                width + (int) dp(16), LinearLayout.LayoutParams.WRAP_CONTENT));
         card.setClickable(true);
         card.setOnClickListener(new View.OnClickListener() {
             @Override
