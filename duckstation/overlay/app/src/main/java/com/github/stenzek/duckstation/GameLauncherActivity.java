@@ -611,7 +611,7 @@ public class GameLauncherActivity extends AppCompatActivity {
             final int index = indices.get(i);
             View card = makeGameCard(index, (int) dp(76));
             LinearLayout.LayoutParams cardLp = (LinearLayout.LayoutParams) card.getLayoutParams();
-            cardLp.rightMargin = (int) dp(12);
+            cardLp.rightMargin = (int) dp(4);
             suggestRow.addView(card, cardLp);
         }
     }
