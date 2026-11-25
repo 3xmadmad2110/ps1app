@@ -609,15 +609,17 @@ public class GameLauncherActivity extends AppCompatActivity {
         Collections.shuffle(indices);
         for (int i = 0; i < 3 && i < indices.size(); i++) {
             final int index = indices.get(i);
-            View card = makeGameCard(index, (int) dp(92));
-            suggestRow.addView(card);
+            View card = makeGameCard(index, (int) dp(76));
+            LinearLayout.LayoutParams cardLp = (LinearLayout.LayoutParams) card.getLayoutParams();
+            cardLp.rightMargin = (int) dp(12);
+            suggestRow.addView(card, cardLp);
         }
     }
 
     private void buildStore() {
         for (int i = 1; i < gameNames.length; i++) {
             final int index = i;
-            View card = makeGameCard(index, (int) dp(130));
+            View card = makeGameCard(index, (int) dp(158));
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams(
                     GridLayout.spec((i - 1) / 2),
                     GridLayout.spec((i - 1) % 2, 1f));
@@ -634,6 +636,8 @@ public class GameLauncherActivity extends AppCompatActivity {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackgroundResource(R.drawable.ps1_row_card);
         card.setPadding((int) dp(8), (int) dp(8), (int) dp(8), (int) dp(8));
+        card.setLayoutParams(new LinearLayout.LayoutParams(
+                (int) dp(width + 16), LinearLayout.LayoutParams.WRAP_CONTENT));
         card.setClickable(true);
         card.setOnClickListener(new View.OnClickListener() {
             @Override
